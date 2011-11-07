@@ -1,4 +1,4 @@
-/* $FreeBSD: ports/devel/gdb/files/fbsd-threads.c,v 1.1 2010/11/16 20:39:48 skreuzer Exp $ */
+/* $FreeBSD: ports/devel/gdb/files/fbsd-threads.c,v 1.2 2011/11/06 18:12:32 ohauer Exp $ */
 /* FreeBSD libthread_db assisted debugging support.
    Copyright 1999, 2000, 2001 Free Software Foundation, Inc.
 
@@ -358,8 +358,11 @@ enable_thread_event_reporting (void)
 
   /* Set the process wide mask saying which events we're interested in.  */
   td_event_emptyset (&events);
-//  td_event_addset (&events, TD_CREATE);
-//  td_event_addset (&events, TD_DEATH);
+
+/* XXX PR ports/162093
+ * td_event_addset (&events, TD_CREATE);
+ * td_event_addset (&events, TD_DEATH);
+*/
 
   err = td_ta_set_event_p (thread_agent, &events);
   if (err != TD_OK)

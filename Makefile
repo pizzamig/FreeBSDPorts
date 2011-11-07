@@ -3,13 +3,14 @@
 # Date created:				16 November 2010
 # Whom:					Steven Kreuzer <skreuzer@FreeBSD.org>
 #
-# $FreeBSD: ports/devel/gdb/Makefile,v 1.9 2011/10/25 16:11:23 skreuzer Exp $
+# $FreeBSD: ports/devel/gdb/Makefile,v 1.10 2011/11/06 18:12:32 ohauer Exp $
 #
 
 PORTNAME=	gdb
 PORTVERSION=	7.3.1
+PORTREVISION=	1
 CATEGORIES=	devel
-MASTER_SITES=   ${MASTER_SITE_GNU:S,$,:gdb,}
+MASTER_SITES=	${MASTER_SITE_GNU:S,$,:gdb,}
 MASTER_SITE_SUBDIR=gdb/:gdb
 DISTFILES=	${PORTNAME}-${PORTVERSION}${EXTRACT_SUFX}:gdb
 
@@ -57,15 +58,15 @@ CFLAGS+=	-g
 
 .if defined(WITH_EXPAT)
 LIB_DEPENDS+=	expat.6:${PORTSDIR}/textproc/expat2
-CONFIGURE_ARGS+= --with-expat=yes
+CONFIGURE_ARGS+=	--with-expat=yes
 .else
-CONFIGURE_ARGS+= --without-expat
+CONFIGURE_ARGS+=	--without-expat
 .endif
 
 .if defined(WITH_PYTHON)
-CONFIGURE_ARGS+= --with-python=${PYTHON_CMD}
+CONFIGURE_ARGS+=	--with-python=${PYTHON_CMD}
 .else
-CONFIGURE_ARGS+= --without-python
+CONFIGURE_ARGS+=	--without-python
 .endif
 
 # XXX: add OSVERSION check after readline is removed from base
