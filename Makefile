@@ -1,5 +1,5 @@
 # ex:ts=8
-# Ports collection makefile for:	GDB 7.1
+# Ports collection makefile for:	GDB 7.3.x
 # Date created:				16 November 2010
 # Whom:					Steven Kreuzer <skreuzer@FreeBSD.org>
 #
@@ -8,7 +8,7 @@
 
 PORTNAME=	gdb
 PORTVERSION=	7.3.1
-PORTREVISION=	1
+PORTREVISION=	2
 CATEGORIES=	devel
 MASTER_SITES=	${MASTER_SITE_GNU:S,$,:gdb,}
 MASTER_SITE_SUBDIR=gdb/:gdb
