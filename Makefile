@@ -3,12 +3,12 @@
 # Date created:				16 November 2010
 # Whom:					Steven Kreuzer <skreuzer@FreeBSD.org>
 #
-# $FreeBSD: ports/devel/gdb/Makefile,v 1.10 2011/11/06 18:12:32 ohauer Exp $
+# $FreeBSD: ports/devel/gdb/Makefile,v 1.11 2011/11/18 06:34:51 sunpoet Exp $
 #
 
 PORTNAME=	gdb
 PORTVERSION=	7.3.1
-PORTREVISION=	2
+PORTREVISION=	1
 CATEGORIES=	devel
 MASTER_SITES=	${MASTER_SITE_GNU:S,$,:gdb,}
 MASTER_SITE_SUBDIR=gdb/:gdb
@@ -84,8 +84,8 @@ CONFIGURE_TARGET=	x86_64-portbld-freebsd${OSREL}
 post-patch:
 	@${REINPLACE_CMD} -e 's/$$/ [GDB v${PORTVERSION} for FreeBSD]/' \
 		${WRKSRC}/gdb/version.in
-.if defined(WITH_THREAD)
-	@${CP} ${FILESDIR}/fbsd-threads.c ${WRKSRC}/gdb
+.if !defined(WITHOUT_THREAD)
+	@${CP} ${FILESDIR}/fbsd-threads.c ${WRKSRC}/gdb/
 .endif
 
 do-install:
