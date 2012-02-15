@@ -47,9 +47,16 @@ LDFLAGS+=	-L${LOCALBASE}/lib
 OPTIONS=	DEBUG "Build with debugging symbols" off \
 		EXPAT "Enable XML parsing for metadata" off \
 		PYTHON "Enable Python support" off \
-		THREAD "Enable Thread support" on
+		THREAD "Enable Thread support" on \
+		GDB_LINK "Create the /usr/local/bin/gdb link" on
 
 .include <bsd.port.options.mk>
+
+.if defined(WITH_GDB_LINK)
+PLIST_SUB+=	GDB_LINK=true
+.else
+PLIST_SUB+=	GDB_LINK=false
+.endif
 
 .if defined(WITH_PYTHON)
 USE_PYTHON=	2.5-2.7
@@ -74,6 +81,7 @@ CONFIGURE_ARGS+=	--with-python=${PYTHON_CMD}
 CONFIGURE_ARGS+=	--without-python
 .endif
 
+
 .if ${ARCH} == "amd64"
 CONFIGURE_TARGET=	x86_64-portbld-freebsd${OSREL}
 .endif
@@ -89,5 +97,7 @@ do-install:
 	${INSTALL_PROGRAM} ${WRKSRC}/gdb/gdb ${PREFIX}/bin/gdb${VER}
 	${LN} ${PREFIX}/bin/gdb${VER} ${PREFIX}/bin/gdbtui${VER}
 	${INSTALL_MAN} ${WRKSRC}/gdb/gdb.1 ${MAN1PREFIX}/man/man1/gdb${VER}.1
-
+.if defined(WITH_GDB_LINK)
+	${LN} -s ${PREFIX}/bin/gdb${VER} ${PREFIX}/bin/gdb
+.endif
 .include <bsd.port.post.mk>
