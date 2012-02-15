@@ -48,7 +48,7 @@ OPTIONS=	DEBUG "Build with debugging symbols" off \
 		EXPAT "Enable XML parsing for metadata" off \
 		PYTHON "Enable Python support" off \
 		THREAD "Enable Thread support" on \
-		GDB_LINK "Create the /usr/local/bin/gdb link" on
+		GDB_LINK "Create the gdb link" on
 
 .include <bsd.port.options.mk>
 
@@ -80,7 +80,6 @@ CONFIGURE_ARGS+=	--with-python=${PYTHON_CMD}
 .else
 CONFIGURE_ARGS+=	--without-python
 .endif
-
 
 .if ${ARCH} == "amd64"
 CONFIGURE_TARGET=	x86_64-portbld-freebsd${OSREL}
