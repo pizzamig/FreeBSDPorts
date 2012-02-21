@@ -1,4 +1,4 @@
-/* $FreeBSD: ports/devel/gdb/files/fbsd-threads.c,v 1.2 2011/11/06 18:12:32 ohauer Exp $ */
+/* $FreeBSD: ports/devel/gdb/files/fbsd-threads.c,v 1.3 2012/01/27 09:38:15 scheidell Exp $ */
 /* FreeBSD libthread_db assisted debugging support.
    Copyright 1999, 2000, 2001 Free Software Foundation, Inc.
 
