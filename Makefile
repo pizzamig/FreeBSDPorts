@@ -3,12 +3,12 @@
 # Date created:				16 November 2010
 # Whom:					Steven Kreuzer <skreuzer@FreeBSD.org>
 #
-# $FreeBSD: ports/devel/gdb/Makefile,v 1.14 2012/03/09 17:03:28 jhb Exp $
+# $FreeBSD: ports/devel/gdb/Makefile,v 1.15 2012/04/01 16:13:10 romain Exp $
 #
 
 PORTNAME=	gdb
 PORTVERSION=	7.4
-PORTREVISION=	2
+PORTREVISION=	3
 CATEGORIES=	devel
 MASTER_SITES=	${MASTER_SITE_GNU:S,$,:gdb,}
 MASTER_SITE_SUBDIR=gdb/:gdb
@@ -104,9 +104,6 @@ do-install:
 .if defined(WITH_PYTHON)
 	(cd ${WRKSRC}/gdb; ${GMAKE} install-python )
 	(cd ${WRKSRC}/gdb/data-directory; ${GMAKE} install-python )
-.endif
-.if defined(WITH_GDB_LINK)
-	${LN} -s ${PREFIX}/bin/gdb${VER} ${PREFIX}/bin/gdb
 .endif
 
 .include <bsd.port.post.mk>
