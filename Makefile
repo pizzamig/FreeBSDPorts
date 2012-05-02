@@ -3,12 +3,11 @@
 # Date created:				16 November 2010
 # Whom:					Steven Kreuzer <skreuzer@FreeBSD.org>
 #
-# $FreeBSD: ports/devel/gdb/Makefile,v 1.16 2012/04/19 19:05:03 pawel Exp $
+# $FreeBSD: ports/devel/gdb/Makefile,v 1.17 2012/05/01 15:53:46 sunpoet Exp $
 #
 
 PORTNAME=	gdb
 PORTVERSION=	7.4.1
-#PORTREVISION=	4
 CATEGORIES=	devel
 MASTER_SITES=	${MASTER_SITE_GNU:S,$,:gdb,}
 MASTER_SITE_SUBDIR=gdb/:gdb
