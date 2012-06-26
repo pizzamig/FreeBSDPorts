@@ -8,7 +8,7 @@
 
 PORTNAME=	gdb
 PORTVERSION=	7.4.1
-PORTREVISION=	1
+PORTREVISION=	2
 CATEGORIES=	devel
 MASTER_SITES=	${MASTER_SITE_GNU:S,$,:gdb,}
 MASTER_SITE_SUBDIR=gdb/:gdb
@@ -90,7 +90,7 @@ CONFIGURE_TARGET=	x86_64-portbld-freebsd${OSREL}
 post-patch:
 	@${REINPLACE_CMD} -e 's/$$/ [GDB v${PORTVERSION} for FreeBSD]/' \
 		${WRKSRC}/gdb/version.in
-.if empty(PORT_OPTIONS:MTHREADS)
+.if ${PORT_OPTIONS:MTHREADS}
 	@${CP} ${FILESDIR}/fbsd-threads.c ${WRKSRC}/gdb/
 .endif
 	@${CP} ${FILESDIR}/amd64bsd-nat.h ${WRKSRC}/gdb
@@ -99,11 +99,9 @@ do-install:
 	${INSTALL_PROGRAM} ${WRKSRC}/gdb/gdb ${PREFIX}/bin/gdb${VER}
 	${LN} ${PREFIX}/bin/gdb${VER} ${PREFIX}/bin/gdbtui${VER}
 	${INSTALL_MAN} ${WRKSRC}/gdb/gdb.1 ${MAN1PREFIX}/man/man1/gdb${VER}.1
-#.if defined(WITH_GDB_LINK)
-.if ${PORT_OPTIONS:MGDB_LINK)
+.if ${PORT_OPTIONS:MGDB_LINK}
 	${LN} -sf gdb${VER} ${PREFIX}/bin/gdb
 .endif
-#.if defined(WITH_PYTHON)
 .if ${PORT_OPTIONS:MPYTHON}
 	(cd ${WRKSRC}/gdb; ${GMAKE} install-python )
 	(cd ${WRKSRC}/gdb/data-directory; ${GMAKE} install-python )
