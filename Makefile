@@ -52,7 +52,7 @@ OPTIONS_DEFAULT=	THREADS GDB_LINK
 
 .include <bsd.port.options.mk>
 
-.if ${PORT_OPTIONS:MGDB_LINK)
+.if ${PORT_OPTIONS:MGDB_LINK}
 PLIST_SUB+=	GDB_LINK=""
 .else
 PLIST_SUB+=	GDB_LINK="@comment "
