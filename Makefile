@@ -3,7 +3,7 @@
 # Date created:				16 November 2010
 # Whom:					Steven Kreuzer <skreuzer@FreeBSD.org>
 #
-# $FreeBSD: ports/devel/gdb/Makefile,v 1.17 2012/05/01 15:53:46 sunpoet Exp $
+# $FreeBSD$
 #
 
 PORTNAME=	gdb
