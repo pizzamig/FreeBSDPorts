@@ -61,6 +61,10 @@ USE_PYTHON=	2.5-2.7
 
 .include <bsd.port.pre.mk>
 
+.if ${PORT_OPTIONS:MTHREADS}
+EXTRA_PATCHES=	${FILESDIR}/extrapatch-gdb-configure.tgt ${FILESDIR}/extrapatch-gdb-Makefile.in
+.endif
+
 .if ${PORT_OPTIONS:MDEBUG}
 CFLAGS+=	-g
 .endif
