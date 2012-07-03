@@ -1,18 +1,15 @@
-# ex:ts=8
-# Ports collection makefile for:	GDB 7.3.x
+# Ports collection makefile for:	GDB
 # Date created:				16 November 2010
 # Whom:					Steven Kreuzer <skreuzer@FreeBSD.org>
 #
-# $FreeBSD$
+# $FreeBSD: ports/devel/gdb/Makefile,v 1.19 2012/06/26 19:27:41 sunpoet Exp $
 #
 
 PORTNAME=	gdb
 PORTVERSION=	7.4.1
 PORTREVISION=	2
 CATEGORIES=	devel
-MASTER_SITES=	${MASTER_SITE_GNU:S,$,:gdb,}
-MASTER_SITE_SUBDIR=gdb/:gdb
-DISTFILES=	${PORTNAME}-${PORTVERSION}${EXTRACT_SUFX}:gdb
+MASTER_SITES=	GNU
 
 MAINTAINER=	luca.pizzamiglio@gmail.com
 COMMENT=	GNU GDB of newer version than comes with the system
@@ -23,7 +20,7 @@ USE_BZIP2=	yes
 USE_GMAKE=	yes
 USE_ICONV=	yes
 GNU_CONFIGURE=	yes
-CONFIGURE_ENV+=	CONFIGURED_M4=m4 CONFIGURED_BISON=byacc
+CONFIGURE_ENV=	CONFIGURED_M4=m4 CONFIGURED_BISON=byacc
 CONFIGURE_ARGS=	--program-suffix=${PORTVERSION:S/.//g} \
 		--with-gdb-datadir=${PREFIX}/share/gdb${PORTVERSION:S/.//g} \
 		--with-libiconv-prefix=${LOCALBASE} \
@@ -42,7 +39,7 @@ MAN1=	gdb${VER}.1
 ONLY_FOR_ARCHS=	i386 amd64	# untested elsewhere, might work
 
 # Forcing to use the readline.6
-LIB_DEPENDS+=	readline.6:${PORTSDIR}/devel/readline
+LIB_DEPENDS+=	readline:${PORTSDIR}/devel/readline
 CFLAGS+=	-isystem ${LOCALBASE}/include
 LDFLAGS+=	-L${LOCALBASE}/lib
 
@@ -69,7 +66,7 @@ CFLAGS+=	-g
 .endif
 
 .if ${PORT_OPTIONS:MEXPAT}
-LIB_DEPENDS+=	expat.6:${PORTSDIR}/textproc/expat2
+LIB_DEPENDS+=	expat:${PORTSDIR}/textproc/expat2
 CONFIGURE_ARGS+=	--with-expat=yes
 .else
 CONFIGURE_ARGS+=	--without-expat
