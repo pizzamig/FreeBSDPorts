@@ -2,7 +2,7 @@
 # Date created:				16 November 2010
 # Whom:					Steven Kreuzer <skreuzer@FreeBSD.org>
 #
-# $FreeBSD: ports/devel/gdb/Makefile,v 1.19 2012/06/26 19:27:41 sunpoet Exp $
+# $FreeBSD$
 #
 
 PORTNAME=	gdb
@@ -38,8 +38,8 @@ MAN1=	gdb${VER}.1
 
 ONLY_FOR_ARCHS=	i386 amd64	# untested elsewhere, might work
 
-# Forcing to use the readline.6
-LIB_DEPENDS+=	readline:${PORTSDIR}/devel/readline
+# Forcing to use the readline.6 from ports (readline in world is not compatible anymore)
+LIB_DEPENDS+=	readline.6:${PORTSDIR}/devel/readline
 CFLAGS+=	-isystem ${LOCALBASE}/include
 LDFLAGS+=	-L${LOCALBASE}/lib
 
