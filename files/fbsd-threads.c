@@ -747,8 +747,10 @@ fbsd_thread_wait (struct target_ops *ops,
       */
       if (!fbsd_thread_alive (ops, inferior_ptid) && !ptid_equal(inferior_ptid, ret))
         {
-          delete_thread (inferior_ptid);
+          ptid_t save_ptid;
+          save_ptid = inferior_ptid;
           inferior_ptid = ret;
+          delete_thread (save_ptid);
         }
     }
 
@@ -1176,7 +1178,7 @@ tsd_cb (thread_key_t key, void (*destructor)(void *), void *ignore)
   else
     name = SYMBOL_PRINT_NAME (ms);
 
-  printf_filtered ("Destructor %p <%s>\n", destructor, name);
+  printf_filtered ("Key %d, destructor %p <%s>\n", key, destructor, name);
   return 0;
 }
 
