@@ -38,8 +38,8 @@ MAN1=	gdb${VER}.1
 
 ONLY_FOR_ARCHS=	i386 amd64	# untested elsewhere, might work
 
-# Forcing to use the readline.6 from ports (readline in world is not compatible anymore)
-LIB_DEPENDS+=	readline.6:${PORTSDIR}/devel/readline
+# Forcing to use the readline from ports (readline in world is not compatible anymore)
+LIB_DEPENDS+=	readline:${PORTSDIR}/devel/readline
 CFLAGS+=	-isystem ${LOCALBASE}/include
 LDFLAGS+=	-L${LOCALBASE}/lib
 
