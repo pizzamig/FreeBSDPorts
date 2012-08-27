@@ -7,7 +7,7 @@
 
 PORTNAME=	gdb
 PORTVERSION=	7.5
-#PORTREVISION=	4
+PORTREVISION=	1
 CATEGORIES=	devel
 MASTER_SITES=	GNU
 
@@ -31,7 +31,8 @@ CONFIGURE_ARGS=	--program-suffix=${PORTVERSION:S/.//g} \
 CFLAGS:=	${CFLAGS:C/ +$//}	# blanks at EOL creep in sometimes
 CFLAGS+=	-DRL_NO_COMPAT
 EXCLUDE=	dejagnu expect readline sim texinfo intl
-EXTRACT_AFTER_ARGS=| ${TAR} -xf - ${EXCLUDE:S/^/--exclude /}
+EXTRACT_AFTER_ARGS=	| ${TAR} -xf - ${EXCLUDE:S/^/--exclude /} \
+			--no-same-owner --no-same-permissions
 VER=	${PORTVERSION:S/.//g}
 PLIST_SUB=	VER=${VER}
 MAN1=	gdb${VER}.1
@@ -98,7 +99,7 @@ post-patch:
 
 do-install:
 	${INSTALL_PROGRAM} ${WRKSRC}/gdb/gdb ${PREFIX}/bin/gdb${VER}
-	${LN} ${PREFIX}/bin/gdb${VER} ${PREFIX}/bin/gdbtui${VER}
+	${LN} -sf ${PREFIX}/bin/gdb${VER} ${PREFIX}/bin/gdbtui${VER}
 	${INSTALL_MAN} ${WRKSRC}/gdb/gdb.1 ${MAN1PREFIX}/man/man1/gdb${VER}.1
 .if ${PORT_OPTIONS:MGDB_LINK}
 	${LN} -sf gdb${VER} ${PREFIX}/bin/gdb
