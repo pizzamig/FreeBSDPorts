@@ -7,7 +7,7 @@
 
 PORTNAME=	gdb
 PORTVERSION=	7.5
-PORTREVISION=	1
+PORTREVISION=	2
 CATEGORIES=	devel
 MASTER_SITES=	GNU
 
@@ -107,6 +107,12 @@ do-install:
 .if ${PORT_OPTIONS:MPYTHON}
 	(cd ${WRKSRC}/gdb; ${GMAKE} install-python )
 	(cd ${WRKSRC}/gdb/data-directory; ${GMAKE} install-python )
+.endif
+
+post-install:
+.if ${PORT_OPTIONS:MPYTHON}
+	chmod u+w ${PREFIX}/share/gdb${VER}/python/gdb/*.py*
+	chmod u+w ${PREFIX}/share/gdb${VER}/python/gdb/command/*.py*
 .endif
 
 .include <bsd.port.post.mk>
