@@ -158,6 +158,9 @@ static void attach_thread (ptid_t ptid, const td_thrhandle_t *th_p,
 static void fbsd_thread_detach (struct target_ops *ops, char *args,
 				int from_tty);
 
+CORE_ADDR fbsd_thread_get_local_address(struct target_ops *ops,
+		ptid_t ptid, CORE_ADDR lm, CORE_ADDR offset);
+
 /* Building process ids.  */
 
 #define GET_PID(ptid)		ptid_get_pid (ptid)
@@ -1287,7 +1290,7 @@ static int
 tsd_cb (thread_key_t key, void (*destructor)(void *), void *ignore)
 {
   struct minimal_symbol *ms;
-  char *name;
+  const char *name;
 
   ms = lookup_minimal_symbol_by_pc (extract_func_ptr (&destructor));
   if (!ms)
