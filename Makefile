@@ -1,9 +1,5 @@
-# Ports collection makefile for:	GDB
-# Date created:				16 November 2010
-# Whom:					Steven Kreuzer <skreuzer@FreeBSD.org>
-#
+# Created by:	Steven Kreuzer <skreuzer@FreeBSD.org>
 # $FreeBSD$
-#
 
 PORTNAME=	gdb
 PORTVERSION=	7.5
