@@ -66,6 +66,7 @@ USE_READLINE=	base
 .endif
 
 .if ${PORT_OPTIONS:MPORT_READLINE}
+USE_READLINE=	port
 .endif
 .include <bsd.port.pre.mk>
 
