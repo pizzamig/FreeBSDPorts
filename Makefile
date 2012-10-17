@@ -37,7 +37,7 @@ ONLY_FOR_ARCHS=	i386 amd64	# untested elsewhere, might work
 OPTIONS_DEFINE=	DEBUG EXPAT PYTHON THREADS GDB_LINK
 OPTIONS_SINGLE_READLINE=	BASE_READLINE BUNDLED_READLINE PORT_READLINE
 OPTIONS_SINGLE=	READLINE
-BASE_READLINE_DESC=	from base system
+BASE_READLINE_DESC=	from base system (EXPERIMENTAL)
 BUNDLED_READLINE_DESC=	from gdb distfile
 PORT_READLINE_DESC=	from devel/readline port
 GDB_LINK_DESC=	Create the gdb link
@@ -118,8 +118,8 @@ do-install:
 
 post-install:
 .if ${PORT_OPTIONS:MPYTHON}
-	chmod u+w ${PREFIX}/share/gdb${VER}/python/gdb/*.py*
-	chmod u+w ${PREFIX}/share/gdb${VER}/python/gdb/command/*.py*
+	${CHMOD} u+w ${PREFIX}/share/gdb${VER}/python/gdb/*.py*
+	${CHMOD} u+w ${PREFIX}/share/gdb${VER}/python/gdb/command/*.py*
 .endif
 
 .include <bsd.port.post.mk>
