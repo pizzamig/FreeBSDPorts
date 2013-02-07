@@ -20,7 +20,7 @@ CONFIGURE_ARGS=	--program-suffix=${PORTVERSION:S/.//g} \
 		--with-gdb-datadir=${PREFIX}/share/gdb${PORTVERSION:S/.//g} \
 		--with-libiconv-prefix=${LOCALBASE} \
 		--without-libunwind-ia64 \
-		--enable-target=all \
+		--enable-targets=all \
 		--enable-tui
 CFLAGS:=	${CFLAGS:C/ +$//}	# blanks at EOL creep in sometimes
 CFLAGS+=	-DRL_NO_COMPAT
