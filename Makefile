@@ -54,6 +54,7 @@ PLIST_SUB+=	GDB_LINK="@comment "
 CONFIGURE_ARGS+=	--enable-tui
 PLIST_SUB+=	TUI_LINK=""
 .else
+CONFIGURE_ARGS+=	--disable-tui
 PLIST_SUB+=	TUI_LINK="@comment "
 .endif
 
@@ -70,6 +71,16 @@ USE_READLINE=	base
 .if ${PORT_OPTIONS:MPORT_READLINE}
 USE_READLINE=	port
 .endif
+
+.if ${PORT_OPTIONS:MPYTHON}
+USE_PYTHON=	2.5-2.7
+CONFIGURE_ARGS+=	--with-python=${PYTHON_CMD}
+PLIST_SUB+=		PYTHON=""
+.else
+CONFIGURE_ARGS+=	--without-python
+PLIST_SUB+=		PYTHON="@comment "
+.endif
+
 .include <bsd.port.pre.mk>
 
 .if ${PORT_OPTIONS:MTHREADS}
@@ -85,15 +96,6 @@ LIB_DEPENDS+=	expat:${PORTSDIR}/textproc/expat2
 CONFIGURE_ARGS+=	--with-expat=yes
 .else
 CONFIGURE_ARGS+=	--without-expat
-.endif
-
-.if ${PORT_OPTIONS:MPYTHON}
-USE_PYTHON=	2.5-2.7
-CONFIGURE_ARGS+=	--with-python=${PYTHON_CMD}
-PLIST_SUB+=		PYTHON=""
-.else
-CONFIGURE_ARGS+=	--without-python
-PLIST_SUB+=		PYTHON="@comment "
 .endif
 
 .if ${ARCH} == "amd64"
