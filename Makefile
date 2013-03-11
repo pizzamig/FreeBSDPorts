@@ -1,4 +1,4 @@
-# Created by:	Steven Kreuzer <skreuzer@FreeBSD.org>
+# Created by: Steven Kreuzer <skreuzer@FreeBSD.org>
 # $FreeBSD$
 
 PORTNAME=	gdb
