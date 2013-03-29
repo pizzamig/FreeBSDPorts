@@ -86,7 +86,7 @@ PLIST_SUB+=		PYTHON="@comment "
 .if ${PORT_OPTIONS:MTHREADS}
 EXTRA_PATCHES=	${FILESDIR}/extrapatch-gdb-configure.tgt ${FILESDIR}/extrapatch-gdb-Makefile.in
 .endif
-
+EXTRA_PATCHES+=	${FILESDIR}/extrapatch-gdb-amd64bsd-nat.c
 .if ${PORT_OPTIONS:MDEBUG}
 CFLAGS+=	-g
 .endif
