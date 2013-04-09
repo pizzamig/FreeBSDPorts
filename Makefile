@@ -1,8 +1,9 @@
 # Created by: Steven Kreuzer <skreuzer@FreeBSD.org>
-# $FreeBSD$
+# $FreeBSD: devel/gdb/Makefile 314093 2013-03-13 16:15:49Z pawel $
 
 PORTNAME=	gdb
 PORTVERSION=	7.5.1
+PORTREVISION=	1
 CATEGORIES=	devel
 MASTER_SITES=	GNU
 
@@ -86,6 +87,7 @@ PLIST_SUB+=		PYTHON="@comment "
 .if ${PORT_OPTIONS:MTHREADS}
 EXTRA_PATCHES=	${FILESDIR}/extrapatch-gdb-configure.tgt ${FILESDIR}/extrapatch-gdb-Makefile.in
 .endif
+
 .if ${PORT_OPTIONS:MDEBUG}
 CFLAGS+=	-g
 .endif
