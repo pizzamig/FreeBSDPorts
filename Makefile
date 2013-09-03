@@ -1,8 +1,8 @@
 # Created by: Steven Kreuzer <skreuzer@FreeBSD.org>
-# $FreeBSD: devel/gdb/Makefile 314093 2013-03-13 16:15:49Z pawel $
+# $FreeBSD: devel/gdb/Makefile 325922 2013-09-01 22:31:44Z rakuco $
 
 PORTNAME=	gdb
-PORTVERSION=	7.6
+PORTVERSION=	7.6.1
 #PORTREVISION=	1
 CATEGORIES=	devel
 MASTER_SITES=	GNU
@@ -13,8 +13,9 @@ COMMENT=	GNU GDB of newer version than comes with the system
 LICENSE=	GPLv3
 
 USE_BZIP2=	yes
-USE_GMAKE=	yes
-USES=		iconv
+USE_CSTD=	gnu89
+#USE_GMAKE=	yes
+USES=		iconv gmake
 GNU_CONFIGURE=	yes
 CONFIGURE_ENV=	CONFIGURED_M4=m4 CONFIGURED_BISON=byacc
 CONFIGURE_ARGS=	--program-suffix=${PORTVERSION:S/.//g} \
@@ -30,7 +31,7 @@ VER=	${PORTVERSION:S/.//g}
 PLIST_SUB=	VER=${VER}
 MAN1=	gdb${VER}.1
 
-ONLY_FOR_ARCHS=	i386 amd64	# untested elsewhere, might work
+ONLY_FOR_ARCHS=	i386 amd64 powerpc powerpc64	# untested elsewhere, might work
 
 OPTIONS_DEFINE=	DEBUG EXPAT PYTHON THREADS TUI GDB_LINK
 OPTIONS_SINGLE_READLINE=	BASE_READLINE BUNDLED_READLINE PORT_READLINE
@@ -65,11 +66,11 @@ CONFIGURE_ARGS+=	--with-system-readline
 
 .if ${PORT_OPTIONS:MBASE_READLINE}
 CFLAGS+=	-D_rl_echoing_p=readline_echoing_p
-USE_READLINE=	base
+USES+=		readline
 .endif
 
 .if ${PORT_OPTIONS:MPORT_READLINE}
-USE_READLINE=	port
+USES+=		readline:port
 .endif
 
 .if ${PORT_OPTIONS:MPYTHON}
@@ -127,6 +128,7 @@ post-install:
 .if ${PORT_OPTIONS:MPYTHON}
 	${CHMOD} u+w ${PREFIX}/share/gdb${VER}/python/gdb/*.py*
 	${CHMOD} u+w ${PREFIX}/share/gdb${VER}/python/gdb/command/*.py*
+	${CHMOD} u+w ${PREFIX}/share/gdb${VER}/python/gdb/function/*.py*
 .endif
 
 .include <bsd.port.post.mk>
