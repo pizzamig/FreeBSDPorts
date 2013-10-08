@@ -18,7 +18,7 @@ USES=		iconv gmake
 GNU_CONFIGURE=	yes
 CONFIGURE_ENV=	CONFIGURED_M4=m4 CONFIGURED_BISON=byacc
 CONFIGURE_ARGS=	--program-suffix=${PORTVERSION:S/.//g} \
-		--with-gdb-datadir=${PREFIX}/share/gdb${PORTVERSION:S/.//g} \
+		--with-gdb-datadir=${STAGEDIR}${PREFIX}/share/gdb${PORTVERSION:S/.//g} \
 		${ICONV_CONFIGURE_ARG} \
 		--without-libunwind-ia64 \
 		--enable-targets=all
@@ -27,7 +27,6 @@ CFLAGS+=	-DRL_NO_COMPAT
 EXCLUDE=	dejagnu expect sim texinfo intl
 VER=		${PORTVERSION:S/.//g}
 PLIST_SUB=	VER=${VER}
-MAN1=		gdb${VER}.1
 EXTRACT_AFTER_ARGS=	${EXCLUDE:S/^/--exclude /}
 
 ONLY_FOR_ARCHS=	i386 amd64 powerpc powerpc64	# untested elsewhere, might work
@@ -83,13 +82,13 @@ post-patch:
 .endif
 
 do-install:
-	${INSTALL_PROGRAM} ${WRKSRC}/gdb/gdb ${PREFIX}/bin/gdb${VER}
-	${INSTALL_MAN} ${WRKSRC}/gdb/gdb.1 ${MAN1PREFIX}/man/man1/gdb${VER}.1
+	${INSTALL_PROGRAM} ${WRKSRC}/gdb/gdb ${STAGEDIR}${PREFIX}/bin/gdb${VER}
+	${INSTALL_MAN} ${WRKSRC}/gdb/gdb.1 ${STAGEDIR}${MAN1PREFIX}/man/man1/gdb${VER}.1
 .if ${PORT_OPTIONS:MTUI}
-	${LN} -sf ${PREFIX}/bin/gdb${VER} ${PREFIX}/bin/gdbtui${VER}
+	${LN} -sf ${STAGEDIR}${PREFIX}/bin/gdb${VER} ${STAGEDIR}${PREFIX}/bin/gdbtui${VER}
 .endif
 .if ${PORT_OPTIONS:MGDB_LINK}
-	${LN} -sf gdb${VER} ${PREFIX}/bin/gdb
+	${LN} -sf gdb${VER} ${STAGEDIR}${PREFIX}/bin/gdb
 .endif
 .if ${PORT_OPTIONS:MPYTHON}
 	(cd ${WRKSRC}/gdb; ${GMAKE} install-python )
@@ -98,9 +97,9 @@ do-install:
 
 post-install:
 .if ${PORT_OPTIONS:MPYTHON}
-	${CHMOD} u+w ${PREFIX}/share/gdb${VER}/python/gdb/*.py*
-	${CHMOD} u+w ${PREFIX}/share/gdb${VER}/python/gdb/command/*.py*
-	${CHMOD} u+w ${PREFIX}/share/gdb${VER}/python/gdb/function/*.py*
+	${CHMOD} u+w ${STAGEDIR}${PREFIX}/share/gdb${VER}/python/gdb/*.py*
+	${CHMOD} u+w ${STAGEDIR}${PREFIX}/share/gdb${VER}/python/gdb/command/*.py*
+	${CHMOD} u+w ${STAGEDIR}${PREFIX}/share/gdb${VER}/python/gdb/function/*.py*
 .endif
 
 .include <bsd.port.mk>
