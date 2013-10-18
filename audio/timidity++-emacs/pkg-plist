@@ -1,0 +1,3 @@
+%%TIMID_LIBDIR%%/if_emacs.so
+%%ELISPDIR%%/timidity.el
+@dirrmtry %%TIMID_LIBDIR%%

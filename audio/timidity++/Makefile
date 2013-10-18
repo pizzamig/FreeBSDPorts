@@ -1,0 +1,86 @@
+# Created by: Yoichi Asai <yatt@luna2.org>
+# $FreeBSD: audio/timidity++/Makefile 327706 2013-09-20 14:36:35Z bapt $
+
+PORTNAME=	timidity++
+PORTVERSION=	2.14.0
+#PORTREVISION?=	11
+CATEGORIES+=	audio
+MASTER_SITES=	SF/timidity/TiMidity%2B%2B/TiMidity%2B%2B-${PORTVERSION}
+DISTNAME=	TiMidity++-${PORTVERSION}
+
+MAINTAINER?=	ports@FreeBSD.org
+COMMENT?=	Software MIDI player
+
+.if !defined(PKGNAMESUFFIX)
+#LIB_DEPENDS=	vorbis:${PORTSDIR}/audio/libvorbis	\
+#		arc:${PORTSDIR}/archivers/libarc
+LIB_DEPENDS=	vorbis:${PORTSDIR}/audio/libvorbis
+RUN_DEPENDS=	${LOCALBASE}/share/timidity/timidity.cfg:${PORTSDIR}/audio/eawpats
+
+CONFLICTS=	timidity-0.*
+.endif
+
+USES=		gmake
+USE_BZIP2=	yes
+GNU_CONFIGURE=	yes
+
+PLIST_SUB+=	TIMID_LIBDIR=${TIMID_LIBDIR}
+TIMID_LIBDIR=	lib/timidity
+
+.include <bsd.port.options.mk>
+
+.if !defined(PKGNAMESUFFIX)
+WANT_GNOME=	yes
+#EXTRACT_AFTER_ARGS=	--exclude '*/libarc/*'
+#		--exclude '*/utils/mblock.h' --exclude '*/utils/memb.h'
+
+CONFIGURE_ARGS=	--enable-interface=ncurses,vt100,server \
+		--program-transform-name= --enable-network
+#CPPFLAGS+=	-I${LOCALBASE}/include/libarc
+LDFLAGS+=	-export-dynamic
+
+DOCFILES=	README.alsaseq README.dl README.m2m README.mts README.sf
+DOCLANG=	C ja_JP.eucJP
+
+MANLANG=	"" ja
+
+.if defined(WITHOUT_X11)
+CONFIGURE_ARGS+=--without-x --disable-spectrogram --disable-wrd --disable-dynamic
+.else
+CONFIGURE_ARGS+=--with-x    --enable-spectrogram  --enable-wrd  --enable-dynamic
+USE_XORG=	x11 xext
+LIB_DEPENDS+=	png15:${PORTSDIR}/graphics/png
+CPPFLAGS+=	-I${LOCALBASE}/include/libpng15
+.endif
+
+.include <bsd.port.pre.mk>
+
+.if ${HAVE_GNOME:Mesound}!=""
+USE_GNOME=	esound
+CONFIGURE_ARGS+=--enable-audio=oss,esd,vorbis
+.else
+CONFIGURE_ARGS+=--enable-audio=oss,vorbis
+.endif
+
+pre-su-install:
+	@${MKDIR} ${STAGEDIR}${PREFIX}/share/timidity ${STAGEDIR}${PREFIX}/${TIMID_LIBDIR}
+
+post-install::
+	${INSTALL_MAN} ${WRKSRC}/doc/ja_JP.eucJP/timidity.1 \
+		${STAGEDIR}${PREFIX}/man/ja/man1
+	${INSTALL_MAN} ${WRKSRC}/doc/ja_JP.eucJP/timidity.cfg.5 \
+		${STAGEDIR}${PREFIX}/man/ja/man5
+.else # defined(PKGNAMESUFFIX)
+.include "${MASTERDIR}/Makefile.interface"
+.endif # !defined(PKGNAMESUFFIX)
+
+post-install::
+.if !defined(NOPORTDOCS) && defined(DOCFILES)
+.for lang in ${DOCLANG}
+	${MKDIR} ${STAGEDIR}${PREFIX}/share/doc/timidity++/${lang:C,^C$,,:C,ja_.*,ja/,}
+	cd ${WRKSRC}/doc/${lang} && ${INSTALL_DATA} ${DOCFILES}	\
+	    ${STAGEDIR}${PREFIX}/share/doc/timidity++/${lang:C,^C$,,:C,ja_.*,ja/,}
+.endfor
+.endif
+
+.include <bsd.port.post.mk>
