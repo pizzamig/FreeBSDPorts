@@ -24,8 +24,8 @@ USES=		gmake
 USE_BZIP2=	yes
 GNU_CONFIGURE=	yes
 
-PLIST_SUB+=	TIMID_LIBDIR=${TIMID_LIBDIR}
 TIMID_LIBDIR=	lib/timidity
+PLIST_SUB+=	TIMID_LIBDIR=${TIMID_LIBDIR}
 
 .include <bsd.port.options.mk>
 
