@@ -110,16 +110,16 @@ DOCLANG=	C ja_JP.eucJP
 
 post-install::
 .if ${INTERFACE} == "emacs"
-	@${MKDIR} ${PREFIX}/${ELISPDIR}
-	${INSTALL_DATA} ${WRKSRC}/interface/timidity.el ${PREFIX}/${ELISPDIR}
+	@${MKDIR} ${STAGEDIR}${PREFIX}/${ELISPDIR}
+	${INSTALL_DATA} ${WRKSRC}/interface/timidity.el ${STAGEDIR}${PREFIX}/${ELISPDIR}
 .endif
 .if ${INTERFACE} == "xaw"
-	@${MKDIR} ${PREFIX}/lib/X11/${EUCJP_LOCALE}/app-defaults
+	@${MKDIR} ${STAGEDIR}${PREFIX}/lib/X11/${EUCJP_LOCALE}/app-defaults
 	${INSTALL_DATA} ${WRKSRC}/TiMidity.ad \
-		${PREFIX}/lib/X11/app-defaults/TiMidity
+		${STAGEDIR}${PREFIX}/lib/X11/app-defaults/TiMidity
 	${INSTALL_DATA} ${WRKSRC}/TiMidity-uj.ad \
-		${PREFIX}/lib/X11/${EUCJP_LOCALE}/app-defaults/TiMidity
+		${STAGEDIR}${PREFIX}/lib/X11/${EUCJP_LOCALE}/app-defaults/TiMidity
 .endif
 .if defined(LINK)
-	${LN} -sf ${PREFIX}/bin/timidity ${PREFIX}/bin/${LINK}
+	${LN} -sf ${STAGEDIR}${PREFIX}/bin/timidity ${STAGEDIR}${PREFIX}/bin/${LINK}
 .endif
