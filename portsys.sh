@@ -5,29 +5,13 @@ AUDIO="ctronome timidity++ timidity++-emacs"
 DEVEL="gdb"
 
 SVNURL="https://svn0.eu.FreeBSD.org/ports/head"
+REDURL="https://svn.redports.org/pizzamig"
 PORTS="${AUDIO} ${DEVEL}"
 
 SVNBSDDIR=svnports
 SVNREDPORT=redports
 
-usage()
-{
-  echo 'portsys.sh [-hl] [-i portname]'
-  echo '	-h print this help'
-  echo '	-l list available ports'
-  echo '	-s prepare the svn '
-  echo '	-i install the git port to the svn'
-}
-
-list()
-{
-  echo "Ports available:"
-  for p in ${PORTS}; do
-    echo "    * $p"
-  done
-}
-
-getCat()
+_getCat()
 {
   local CATEGORY
   CATEGORY=""
@@ -44,28 +28,69 @@ getCat()
   echo $CATEGORY
 }
 
-svn_up()
+usage()
 {
-  [ ! -d ${SVNBSDDIR} ] && mkdir ${SVNBSDDIR}
-  pushd ${SVNBSDDIR}
-  for p in $PORTS; do
-    if [ -d $p ]; then
-      (cd $p; svn up)
-    else
-      svn co $SVNURL/$(getCat $p)/$p $p
-    fi
+  echo 'portsys.sh [-hlsc] [-i portname]'
+  echo '	-h print this help'
+  echo '	-l list available ports'
+  echo '	-s prepare/co/update the freebsd svn repository for all ports'
+  echo '	-R prepare/co/update the redports svn repository for all ports'
+  echo '	-i install the git port to the freebsd svn'
+  echo '	-I install the git port to the redports svn'
+  echo '	-c clean! remove svn local directories'
+}
+
+list()
+{
+  echo "Ports available:"
+  for p in ${PORTS}; do
+    echo "    * $p"
   done
-  popd
+}
+
+_svn_up()
+{
+  local SVNDIR=${1:-$SVNBSDDIR}
+  local URL=${2:-$SVNURL}
+  [ ! -d ${SVNDIR} ] && mkdir ${SVNDIR}
+  pushd ${SVNDIR}
+  if [ "$3" = "root" ]; then
+    svn co $URL/ .
+  else
+    for p in $PORTS; do
+      local CAT=$(_getCat $p)
+      if [ -d $CAT ]; then
+	mkdir -p $CAT
+      fi
+      if [ -d $CAT/$p ]; then
+	(cd $CAT/$p; svn up)
+      else
+	svn co $URL/$CAT/$p $CAT/$p
+      fi
+    done
+  fi
+  popd > /dev/null
+}
+
+cleansvn()
+{
+  [ -d ${SVNBSDDIR} ] && rm -rf ${SVNBSDDIR}
+  [ -d ${SVNREDPORT} ] && rm -rf ${SVNREDPORT}
+}
+
+_git2svn()
+{
+  local CATEGORY
+  CATEGORY=$(_getCat $1)
+  rsync -v -r --delete --exclude=.svn --exclude=.git $CATEGORY/$1 ${2}/$CATEGORY
 }
 
 git2svn()
 {
-  local CATEGORY
-  CATEGORY=$(getCat $1)
-  rsync -v -r --delete --exclude=.svn --exclude=.git $CATEGORY/$1 svnports
+  _git2svn $1 ${SVNBSDDIR}
 }
 
-args=$(getopt hsli: $*)
+args=$(getopt hlcsRi:I: $*)
 
 if [ $? -ne 0 ]; then
   usage
@@ -83,12 +108,24 @@ while true; do
     list
     shift
     ;;
-  -i) # install
-    git2svn $2 
+  -i) # install to FreeBSD svn
+    _git2svn $2 ${SVNBSDDIR}
+    shift; shift;
+    ;;
+  -I) # install to Redports svn
+    _git2svn $2 ${SVNREDPORT}
     shift; shift;
     ;;
   -s)
-    svn_up
+    _svn_up ${SVNBSDDIR} ${SVNURL}
+    shift;
+    ;;
+  -R)
+    _svn_up ${SVNREDPORT} ${REDURL} root
+    shift;
+    ;;
+  -c)
+    cleansvn
     shift;
     ;;
   --)
