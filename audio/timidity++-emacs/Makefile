@@ -3,11 +3,10 @@
 
 PKGNAMESUFFIX=	-emacs
 
-MAINTAINER=	ports@FreeBSD.org
+MAINTAINER=	luca.pizzamiglio@gmail.com
 COMMENT=	Emacs interface for TiMidity++
 
 MASTERDIR=	${.CURDIR}/../../audio/timidity++
 PLIST_SUB+=	ELISPDIR=${ELISPDIR}
-#PLIST_FILES=	${TIMID_LIBDIR}/if_emacs.so ${ELISPDIR}/timidity.el
 
 .include "${MASTERDIR}/Makefile"

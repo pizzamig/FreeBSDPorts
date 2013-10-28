@@ -3,10 +3,9 @@
 
 PKGNAMESUFFIX=	-xaw
 
-MAINTAINER=	ports@FreeBSD.org
+MAINTAINER=	luca.pizzamiglio@gmail.com
 COMMENT=	Xaw interface for TiMidity++
 
 MASTERDIR=	${.CURDIR}/../../audio/timidity++
-NO_STAGE=	yes
 
 .include "${MASTERDIR}/Makefile"
