@@ -8,8 +8,8 @@ COMMENT=	Motif interface for TiMidity++
 
 MASTERDIR=	${.CURDIR}/../../audio/timidity++
 
-PLIST_FILES=	bin/xmmidi ${TIMID_LIBDIR}/interface_m.so
-NO_STAGE=	yes
+#PLIST_FILES=	bin/xmmidi ${TIMID_LIBDIR}/interface_m.so
+PLIST_SUB+=	TIMID_LIBDIR=${TIMID_LIBDIR}
 
 post-configure:
 	@${MV} ${WRKSRC}/interface/Makefile ${WRKSRC}/interface/Makefile.orig

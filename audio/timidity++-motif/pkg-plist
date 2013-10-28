@@ -1,0 +1,3 @@
+bin/xmmidi
+%%TIMID_LIBDIR%%/if_motif.so
+@dirrmtry %%TIMID_LIBDIR%%
