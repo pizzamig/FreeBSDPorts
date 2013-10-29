@@ -121,5 +121,5 @@ post-install::
 		${STAGEDIR}${PREFIX}/lib/X11/${EUCJP_LOCALE}/app-defaults/TiMidity
 .endif
 .if defined(LINK)
-	${LN} -sf ${STAGEDIR}${PREFIX}/bin/timidity ${STAGEDIR}${PREFIX}/bin/${LINK}
+	${LN} -sf ${PREFIX}/bin/timidity ${STAGEDIR}${PREFIX}/bin/${LINK}
 .endif
