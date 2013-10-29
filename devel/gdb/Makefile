@@ -1,5 +1,5 @@
 # Created by: Steven Kreuzer <skreuzer@FreeBSD.org>
-# $FreeBSD: devel/gdb/Makefile 325922 2013-09-01 22:31:44Z rakuco $
+# $FreeBSD: head/devel/gdb/Makefile 331139 2013-10-21 13:33:44Z danilo $
 
 PORTNAME=	gdb
 PORTVERSION=	7.6.1
@@ -41,7 +41,7 @@ GDB_LINK_DESC=		Create the gdb link
 TUI_DESC=		Text User Interface enabled
 OPTIONS_DEFAULT=	THREADS TUI GDB_LINK PORT_READLINE
 
-# Activating the plist 
+# Activating the plist
 OPTIONS_SUB=yes
 
 DEBUG_CFLAGS=		-g
@@ -85,7 +85,7 @@ do-install:
 	${INSTALL_PROGRAM} ${WRKSRC}/gdb/gdb ${STAGEDIR}${PREFIX}/bin/gdb${VER}
 	${INSTALL_MAN} ${WRKSRC}/gdb/gdb.1 ${STAGEDIR}${MAN1PREFIX}/man/man1/gdb${VER}.1
 .if ${PORT_OPTIONS:MTUI}
-	${LN} -sf ${STAGEDIR}${PREFIX}/bin/gdb${VER} ${STAGEDIR}${PREFIX}/bin/gdbtui${VER}
+	${LN} -sf gdb${VER} ${STAGEDIR}${PREFIX}/bin/gdbtui${VER}
 .endif
 .if ${PORT_OPTIONS:MGDB_LINK}
 	${LN} -sf gdb${VER} ${STAGEDIR}${PREFIX}/bin/gdb
