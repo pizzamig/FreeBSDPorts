@@ -12,9 +12,12 @@ lib/X11/%%EUCJP_LOCALE%%/app-defaults/TiMidity
 %%TIMID_LIBDIR%%/bitmaps/repeat.xbm
 %%TIMID_LIBDIR%%/bitmaps/stop.xbm
 %%TIMID_LIBDIR%%/bitmaps/timidity.xbm
-%%TIMID_LIBDIR%%/interface_a.so
+%%TIMID_LIBDIR%%/if_xaw.so
 %%PORTDOCS%%%%DOCSDIR%%/README.xaw
-%%PORTDOCS%%share/doc/ja/timidity++/README.xaw
+%%PORTDOCS%%%%DOCSDIR%%/ja/README.xaw
+%%PORTDOCS%%@dirrmtry %%DOCSDIR%%/ja
+%%PORTDOCS%%@dirrmtry %%DOCSDIR%%
 @dirrm %%TIMID_LIBDIR%%/bitmaps
+@dirrmtry %%TIMID_LIBDIR%%
 @dirrmtry lib/X11/%%EUCJP_LOCALE%%/app-defaults
 @dirrmtry lib/X11/%%EUCJP_LOCALE%%

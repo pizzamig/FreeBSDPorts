@@ -115,9 +115,9 @@ post-install::
 .endif
 .if ${INTERFACE} == "xaw"
 	@${MKDIR} ${STAGEDIR}${PREFIX}/lib/X11/${EUCJP_LOCALE}/app-defaults
-	${INSTALL_DATA} ${WRKSRC}/TiMidity.ad \
+	${INSTALL_DATA} ${WRKSRC}/interface/TiMidity.ad \
 		${STAGEDIR}${PREFIX}/lib/X11/app-defaults/TiMidity
-	${INSTALL_DATA} ${WRKSRC}/TiMidity-uj.ad \
+	${INSTALL_DATA} ${WRKSRC}/interface/TiMidity-uj.ad \
 		${STAGEDIR}${PREFIX}/lib/X11/${EUCJP_LOCALE}/app-defaults/TiMidity
 .endif
 .if defined(LINK)

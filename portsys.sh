@@ -1,7 +1,8 @@
 #!/usr/local/bin/bash
 
 CAT="AUDIO DEVEL"
-AUDIO="ctronome timidity++ timidity++-emacs timidity++-motif timidity++-xskin"
+AUDIO="ctronome timidity++ timidity++-emacs timidity++-motif timidity++-xaw timidity++-xskin"
+WIP="timidity++-gtk timidity++-tcltk timidity++-slang"
 DEVEL="gdb"
 
 SVNURL="https://svn0.eu.FreeBSD.org/ports/head"
