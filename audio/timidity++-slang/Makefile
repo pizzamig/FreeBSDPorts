@@ -8,6 +8,6 @@ COMMENT=	Slang interface for TiMidity++
 
 MASTERDIR=	${.CURDIR}/../../audio/timidity++
 
-PLIST_FILES=	${TIMID_LIBDIR}/interface_s.so
+PLIST_SUB+=	TIMID_LIBDIR=${TIMID_LIBDIR}
 
 .include "${MASTERDIR}/Makefile"
