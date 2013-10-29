@@ -1,0 +1,3 @@
+bin/gtkmidi
+%%TIMID_LIBDIR%%/if_gtk.so
+@dirrmtry %%TIMID_LIBDIR%%

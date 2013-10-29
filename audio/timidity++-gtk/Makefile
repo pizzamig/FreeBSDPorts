@@ -3,12 +3,11 @@
 
 PKGNAMESUFFIX=	-gtk
 
-MAINTAINER=	ports@FreeBSD.org
+MAINTAINER=	luca.pizzamiglio@gmail.com
 COMMENT=	Gtk interface for TiMidity++
 
 MASTERDIR=	${.CURDIR}/../../audio/timidity++
 
-PLIST_FILES=	bin/gtkmidi ${TIMID_LIBDIR}/interface_g.so
-NO_STAGE=	yes
+PLIST_SUB+=	TIMID_LIBDIR=${TIMID_LIBDIR}
 
 .include "${MASTERDIR}/Makefile"
