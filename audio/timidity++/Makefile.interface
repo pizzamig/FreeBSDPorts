@@ -77,12 +77,12 @@ CONFIGURE_ARGS+=	--with-tcl-includes=${LOCALBASE}/include/tcl8.0jp \
 		--with-tcl-libs=${LOCALBASE}/lib --with-tk-libs=${LOCALBASE}/lib
 CONFIGURE_ENV+=	WISH=wish8.0jp
 .else
-LIB_DEPENDS+=	tk84:${PORTSDIR}/x11-toolkits/tk84
-
-CONFIGURE_ARGS+=	--with-tcl-includes=${LOCALBASE}/include/tcl8.4 \
-		--with-tk-includes=${LOCALBASE}/include/tk8.4 \
-		--with-tcl-libs=${LOCALBASE}/lib --with-tk-libs=${LOCALBASE}/lib
-CONFIGURE_ENV+=	WISH=wish8.4
+USES+=		tk
+#LIB_DEPENDS+=	tk84:${PORTSDIR}/x11-toolkits/tk84
+#CONFIGURE_ARGS+=	--with-tcl-includes=${LOCALBASE}/include/tcl8.4 \
+#		--with-tk-includes=${LOCALBASE}/include/tk8.4 \
+#		--with-tcl-libs=${LOCALBASE}/lib --with-tk-libs=${LOCALBASE}/lib
+#CONFIGURE_ENV+=	WISH=wish8.4
 .endif
 .endif
 
