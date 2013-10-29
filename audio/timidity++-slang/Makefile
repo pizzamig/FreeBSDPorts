@@ -1,0 +1,13 @@
+# Created by: Yoichi Asai <yatt@msc.biglobe.ne.jp>
+# $FreeBSD: audio/timidity++-slang/Makefile 327706 2013-09-20 14:36:35Z bapt $
+
+PKGNAMESUFFIX=	-slang
+
+MAINTAINER=	luca.pizzamiglio@gmail.com
+COMMENT=	Slang interface for TiMidity++
+
+MASTERDIR=	${.CURDIR}/../../audio/timidity++
+
+PLIST_FILES=	${TIMID_LIBDIR}/interface_s.so
+
+.include "${MASTERDIR}/Makefile"
