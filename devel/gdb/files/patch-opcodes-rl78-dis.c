@@ -5,7 +5,7 @@
  	    case '0':
  	    case '1':
 -	      oper = opcode.op + *s - '0';
-+	      oper = *s == '0' ? &opcode[0] : &opcode[1];
++	      oper = *s == '0' ? &opcode.op[0] : &opcode.op[1];
  	    if (do_es)
  	      {
  		if (oper->use_es && indirect_type (oper->type))
