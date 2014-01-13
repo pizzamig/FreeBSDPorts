@@ -1,13 +1,13 @@
 #!/usr/local/bin/bash
 
-CAT="AUDIO DEVEL"
-AUDIO="ctronome timidity++ timidity++-emacs timidity++-motif timidity++-slang timidity++-tcltk timidity++-xaw timidity++-xskin"
-WIP="timidity++-gtk" 
+CAT="AUDIO DEVEL TEXTPROC"
+AUDIO="ctronome" # timidity++ timidity++-emacs timidity++-motif timidity++-slang timidity++-tcltk timidity++-xaw timidity++-xskin
 DEVEL="gdb"
+TEXTPROC="kdiff3"
 
 SVNURL="https://svn0.eu.FreeBSD.org/ports/head"
 REDURL="https://svn.redports.org/pizzamig"
-PORTS="${AUDIO} ${DEVEL}"
+PORTS="${AUDIO} ${DEVEL} ${TEXTPROC}"
 
 SVNBSDDIR=svnports
 SVNREDPORT=redports
@@ -24,6 +24,11 @@ _getCat()
   for p in $DEVEL; do
     if [ $p = $1 ]; then
       CATEGORY="devel"
+    fi
+  done
+  for p in $TEXTPROC; do
+    if [ $p = $1 ]; then
+      CATEGORY="textproc"
     fi
   done
   echo $CATEGORY
