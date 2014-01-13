@@ -1,9 +1,6 @@
 bin/kdiff3
-lib/kde4/libkdiff3part.so
-lib/kde4/libkdiff3plugin.so
 lib/kde4/kdiff3fileitemaction.so
 share/applications/kde4/kdiff3.desktop
-share/apps/kdiff3/kdiff3_part.rc
 share/apps/kdiff3/kdiff3_shell.rc
 share/apps/kdiff3part/kdiff3_part.rc
 share/doc/HTML/da/kdiff3/common
@@ -48,7 +45,6 @@ share/icons/hicolor/16x16/apps/kdiff3.png
 share/icons/hicolor/32x32/apps/kdiff3.png
 share/icons/locolor/16x16/apps/kdiff3.png
 share/icons/locolor/32x32/apps/kdiff3.png
-share/kde4/services/kdiff3_plugin.desktop
 share/kde4/services/kdiff3part.desktop
 share/kde4/services/kdiff3fileitemaction.desktop
 share/locale/ar/LC_MESSAGES/kdiff3.mo
