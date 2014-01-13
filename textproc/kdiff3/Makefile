@@ -2,19 +2,18 @@
 # $FreeBSD: textproc/kdiff3/Makefile 339314 2014-01-10 04:48:02Z tabthorpe $
 
 PORTNAME=	kdiff3
-PORTVERSION=	0.9.95
-PORTREVISION=	4
+PORTVERSION=	0.9.97
+PORTREVISION=	0
 CATEGORIES=	textproc kde
 MASTER_SITES=	SF
 
-MAINTAINER=	ports@FreeBSD.org
+MAINTAINER=	luca.pizzamiglio@gmail.com
 COMMENT=	A KDE4 graphical frontend for diff
 
 USE_KDE4=	kdelibs libkonq kdeprefix kdehier automoc4
 USES=		cmake gettext
 USE_QT4=	moc_build qmake_build rcc_build uic_build
 
-NO_STAGE=	yes
 post-patch:
 #Fix build with kdelibs>=4.5.0
 	${REINPLACE_CMD} -e 's,V4.1.2-Based,V4.2-Based,g' \
