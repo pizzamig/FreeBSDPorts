@@ -154,8 +154,8 @@ share/kde4/services/kdiff3fileitemaction.desktop
 %%NLS%%share/locale/zh_TW/LC_MESSAGES/kdiff3.mo
 %%NLS%%share/locale/zh_TW/LC_MESSAGES/kdiff3fileitemactionplugin.mo
 %%NLS%%share/locale/zh_TW/LC_MESSAGES/kdiff3plugin.mo
-%%NLS%%@dirrmtry share/local/rw/LC_LMESSAGES
-%%NLS%%@dirrmtry share/local/rw/
+%%NLS%%@dirrmtry share/locale/rw/LC_MESSAGES
+%%NLS%%@dirrmtry share/locale/rw
 @dirrmtry share/icons/locolor/32x32/apps
 @dirrmtry share/icons/locolor/32x32
 @dirrmtry share/icons/locolor/16x16/apps
