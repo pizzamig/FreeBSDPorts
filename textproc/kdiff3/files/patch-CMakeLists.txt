@@ -11,7 +11,7 @@
 +  message(STATUS "NLS activated ")
 +  message(STATUS "")
 +  add_subdirectory(po)
-+else(BUILD_pt)
++else(BUILD_po)
 +  message(STATUS "")
 +  message(STATUS "NLS deactivated ")
 +  message(STATUS "")
