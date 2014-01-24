@@ -1,8 +1,14 @@
 #!/usr/local/bin/bash
 
 CAT="AUDIO DEVEL TEXTPROC"
-AUDIO="ctronome" # timidity++ timidity++-emacs timidity++-motif timidity++-slang timidity++-tcltk timidity++-xaw timidity++-xskin
-DEVEL="gdb"
+AUDIO="ctronome" # ksmp3play # timidity++ timidity++-emacs timidity++-motif timidity++-slang timidity++-tcltk timidity++-xaw timidity++-xskin
+BENCHMARK= "" # nbench unixbench sysbench libmicro
+DATABASES="" # akonadi-googledata
+DEVEL="gdb" # cross-gdb bcpp
+GAMES="" # xlife doom conquest
+MATH="" # ndiff
+MULTIMEDIA="" # oggvideotools
+SYSUTILS="" # kdirstat backupme
 TEXTPROC="kdiff3"
 
 SVNURL="https://svn0.eu.FreeBSD.org/ports/head"
