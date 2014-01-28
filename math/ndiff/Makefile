@@ -34,9 +34,12 @@ CONFIGURE_ARGS+= --with-double
 .endif
 .endif
 
-#ALL_TARGET=	all check-runs
-
-#post-patch:
-#	@${REINPLACE_CMD} -e "s:%%DATADIR%%:${DATADIR}:g" ${WRKSRC}/Makefile.in
+post-install:
+.if ${PORT_OPTIONS:MDOCS}
+	${MKDIR} ${STAGEDIR}${DOCSDIR}
+. for f in ${PORTNAME}.html ${PORTNAME}.pdf ${PORTNAME}.ps
+	${INSTALL_DATA} ${WRKSRC}/${f}.html ${STAGEDIR}${DOCSDIR}
+. endfor
+.endif
 
 .include <bsd.port.mk>
