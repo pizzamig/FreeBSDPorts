@@ -2,18 +2,18 @@
 
 CAT="AUDIO DEVEL TEXTPROC"
 AUDIO="ctronome" # ksmp3play # timidity++ timidity++-emacs timidity++-motif timidity++-slang timidity++-tcltk timidity++-xaw timidity++-xskin
-BENCHMARK= "" # nbench unixbench sysbench libmicro
+BENCHMARK="" # nbench unixbench sysbench libmicro
 DATABASES="" # akonadi-googledata
 DEVEL="gdb" # cross-gdb bcpp
 GAMES="" # xlife doom conquest
-MATH="" # ndiff
+MATH="ndiff"
 MULTIMEDIA="" # oggvideotools
 SYSUTILS="" # kdirstat backupme
 TEXTPROC="kdiff3"
 
 SVNURL="https://svn0.eu.FreeBSD.org/ports/head"
 REDURL="https://svn.redports.org/pizzamig"
-PORTS="${AUDIO} ${DEVEL} ${TEXTPROC}"
+PORTS="${AUDIO} ${DEVEL} ${MATH} ${TEXTPROC}"
 
 SVNBSDDIR=svnports
 SVNREDPORT=redports
@@ -30,6 +30,11 @@ _getCat()
   for p in $DEVEL; do
     if [ $p = $1 ]; then
       CATEGORY="devel"
+    fi
+  done
+  for p in $MATH; do
+    if [ $p = $1 ]; then
+      CATEGORY="math"
     fi
   done
   for p in $TEXTPROC; do
