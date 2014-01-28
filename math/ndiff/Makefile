@@ -8,7 +8,8 @@ CATEGORIES=	math
 MASTER_SITES=	ftp://ftp.math.utah.edu/pub/misc/
 
 MAINTAINER=	luca.pizzammiglio@gmail.com
-COMMENT=	Compare putatively similar files, ignoring small numeric differences
+COMMENT=	Compare putatively similar files, \
+			ignoring small numeric differences
 
 #LICENSE=	
 
@@ -38,7 +39,7 @@ post-install:
 .if ${PORT_OPTIONS:MDOCS}
 	${MKDIR} ${STAGEDIR}${DOCSDIR}
 . for f in ${PORTNAME}.html ${PORTNAME}.pdf ${PORTNAME}.ps
-	${INSTALL_DATA} ${WRKSRC}/${f}.html ${STAGEDIR}${DOCSDIR}
+	${INSTALL_DATA} ${WRKSRC}/${f} ${STAGEDIR}${DOCSDIR}
 . endfor
 .endif
 
