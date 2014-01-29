@@ -47,13 +47,14 @@ _getCat()
 
 usage()
 {
-  echo 'portsys.sh [-hlsc] [-i portname]'
+  echo 'portsys.sh [-hlsRc] [-i portname] [-I portname] [-p portname]'
   echo '	-h print this help'
   echo '	-l list available ports'
   echo '	-s prepare/co/update the freebsd svn repository for all ports'
   echo '	-R prepare/co/update the redports svn repository for all ports'
   echo '	-i install the git port to the freebsd svn'
   echo '	-I install the git port to the redports svn'
+  echo '	-p create the patch/diff file to submit a PR'
   echo '	-c clean! remove svn local directories'
 }
 
@@ -99,15 +100,26 @@ _git2svn()
 {
   local CATEGORY
   CATEGORY=$(_getCat $1)
+
+  [ -z ${CATEGORY} ] && echo "No category found for $1" && return
+  [ -d $CATEGORY ] && echo "Directory ${CATEGORY} not found" && return
+  [ -d $CATEGORY/$1 ] && echo "Directory $CATEGORY/$1 not found" && return
+  [ -d ${2} ] && echo "Directory $2 not found" && return
+  [ -d ${2}/$CATEGORY ] && echo "Directory ${2}/$CATEGORY not found" & return
+
   rsync -v -r --delete --exclude=.svn --exclude=.git $CATEGORY/$1 ${2}/$CATEGORY
 }
 
-git2svn()
+_make_patch()
 {
-  _git2svn $1 ${SVNBSDDIR}
+  local _PORT=${1}
+  local _CATEGORY=$(_getCat ${_PORT})
+  [ -z ${_PORT} ] && echo "No port" && return
+  [ -z ${_CATEGORY} ] && echo "No category found for ${_PORT}" && return
+  $( cd ${SVNBSDDIR}/${_CATEGORY}/${_PORT}; svn diff > ../../../port.diff )
 }
 
-args=$(getopt hlcsRi:I: $*)
+args=$(getopt hlcsRi:I:p: $*)
 
 if [ $? -ne 0 ]; then
   usage
@@ -144,6 +156,10 @@ while true; do
   -c)
     cleansvn
     shift;
+    ;;
+  -p)
+    _make_patch $2
+    shift; shift;
     ;;
   --)
     shift; break
