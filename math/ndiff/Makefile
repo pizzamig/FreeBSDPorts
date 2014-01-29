@@ -34,6 +34,9 @@ CONFIGURE_ARGS+=	--with-double
 .endif
 .endif
 
+pre-install:
+	${STRIP_CMD} ${WRKSRC}/${PORTNAME}
+
 post-install:
 .if ${PORT_OPTIONS:MDOCS}
 	${MKDIR} ${STAGEDIR}${DOCSDIR}
