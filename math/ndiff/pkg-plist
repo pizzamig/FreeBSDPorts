@@ -4,5 +4,5 @@ man/man1/ndiff.1.gz
 %%PORTDOCS%%%%DOCSDIR%%/ndiff.html
 %%PORTDOCS%%%%DOCSDIR%%/ndiff.pdf
 %%PORTDOCS%%%%DOCSDIR%%/ndiff.ps
-%%PORTDOCS%%@dirrmtry %%DOCSDIR%%
-@dirrm %%DATADIR%%
+%%PORTDOCS%%@dirrm %%DOCSDIR%%
+@dirrmtry %%DATADIR%%

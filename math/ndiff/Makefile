@@ -8,17 +8,16 @@ CATEGORIES=	math
 MASTER_SITES=	ftp://ftp.math.utah.edu/pub/misc/
 
 MAINTAINER=	luca.pizzammiglio@gmail.com
-COMMENT=	Compare putatively similar files, \
-			ignoring small numeric differences
+COMMENT=	Compare files, ignoring numeric differences
 
-#LICENSE=	
+#LICENSE=
 
 GNU_CONFIGURE=	yes
-USES=		gmake
+USES=	gmake
 
 OPTIONS_DEFINE=	DOCS GMP
 
-OPTIONS_DEFAULT=	
+OPTIONS_DEFAULT=
 
 GMP_LIB_DEPENDS=	libgmp.so:${PORTSDIR}/math/gmp
 GMP_CFLAGS=	-I${LOCALBASE}/include
@@ -29,9 +28,9 @@ GMP_CONFIGURE_ON=	--with-gmp
 
 .if ! ${PORT_OPTIONS:MGMP}
 .if ${ARCH} == sparc64
-CONFIGURE_ARGS+= --with-long-double
+CONFIGURE_ARGS+=	--with-long-double
 .else
-CONFIGURE_ARGS+= --with-double
+CONFIGURE_ARGS+=	--with-double
 .endif
 .endif
 
