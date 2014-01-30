@@ -1,8 +1,0 @@
-bin/ndiff
-%%DATADIR%%/ndiff.awk
-man/man1/ndiff.1.gz
-%%PORTDOCS%%%%DOCSDIR%%/ndiff.html
-%%PORTDOCS%%%%DOCSDIR%%/ndiff.pdf
-%%PORTDOCS%%%%DOCSDIR%%/ndiff.ps
-%%PORTDOCS%%@dirrm %%DOCSDIR%%
-@dirrmtry %%DATADIR%%

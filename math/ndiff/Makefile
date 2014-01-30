@@ -10,14 +10,19 @@ MASTER_SITES=	ftp://ftp.math.utah.edu/pub/misc/
 MAINTAINER=	luca.pizzammiglio@gmail.com
 COMMENT=	Compare files, ignoring numeric differences
 
-#LICENSE=
+LICENSE=	GPLv2
 
+USES=		gmake
 GNU_CONFIGURE=	yes
-USES=	gmake
 
-OPTIONS_DEFINE=	DOCS GMP
+PLIST_FILES=	bin/${PORTNAME} \
+		man/man1/${PORTNAME}.1.gz \
+		%%DATADIR%%/${PORTNAME}.awk
+PLIST_DIRS=	%%DATADIR%%
 
-OPTIONS_DEFAULT=
+PORTDOCS=	*.html *.pdf *.ps *.txt
+
+OPTIONS_DEFINE=	GMP
 
 GMP_LIB_DEPENDS=	libgmp.so:${PORTSDIR}/math/gmp
 GMP_CFLAGS=	-I${LOCALBASE}/include
@@ -34,15 +39,8 @@ CONFIGURE_ARGS+=	--with-double
 .endif
 .endif
 
-pre-install:
-	${STRIP_CMD} ${WRKSRC}/${PORTNAME}
-
 post-install:
-.if ${PORT_OPTIONS:MDOCS}
-	${MKDIR} ${STAGEDIR}${DOCSDIR}
-. for f in ${PORTNAME}.html ${PORTNAME}.pdf ${PORTNAME}.ps
-	${INSTALL_DATA} ${WRKSRC}/${f} ${STAGEDIR}${DOCSDIR}
-. endfor
-.endif
+	${STRIP_CMD} ${STAGEDIR}${PREFIX}/bin/${PORTNAME}
+	@${MKDIR} ${STAGEDIR}${DOCSDIR}
 
 .include <bsd.port.mk>
