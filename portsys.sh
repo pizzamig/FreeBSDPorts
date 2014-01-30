@@ -98,16 +98,16 @@ cleansvn()
 
 _git2svn()
 {
-  local CATEGORY
-  CATEGORY=$(_getCat $1)
+  local _PORT=${1}
+  local _CATEGORY=$(_getCat ${_PORT})
 
-  [ -z ${CATEGORY} ] && echo "No category found for $1" && return
-  [ ! -d $CATEGORY ] && echo "Directory ${CATEGORY} not found" && return
-  [ ! -d $CATEGORY/$1 ] && echo "Directory $CATEGORY/$1 not found" && return
+  [ -z ${_CATEGORY} ] && echo "No category found for $1" && return
+  [ ! -d $_CATEGORY ] && echo "Directory ${_CATEGORY} not found" && return
+  [ ! -d $_CATEGORY/$_PORT ] && echo "Directory $_CATEGORY/$_PORT not found" && return
   [ ! -d ${2} ] && echo "Directory $2 not found" && return
-  [ ! -d ${2}/$CATEGORY ] && echo "Directory ${2}/$CATEGORY not found" && return
+  [ ! -d ${2}/$_CATEGORY ] && echo "Directory ${2}/$_CATEGORY not found" && return
 
-  rsync -v -r --delete --exclude=.svn --exclude=.git $CATEGORY/$1 ${2}/$CATEGORY
+  rsync -v -r --delete --exclude=.svn --exclude=.git $_CATEGORY/$_PORT ${2}/$_CATEGORY
 }
 
 _make_patch()
@@ -116,7 +116,11 @@ _make_patch()
   local _CATEGORY=$(_getCat ${_PORT})
   [ -z ${_PORT} ] && echo "No port" && return
   [ -z ${_CATEGORY} ] && echo "No category found for ${_PORT}" && return
-  $( cd ${SVNBSDDIR}/${_CATEGORY}/${_PORT}; svn diff > ../../../port.diff )
+  [ ! -d ${SVNBSDDIR} ] && echo "${SVNBSDDIR} directory is missing. Use the -s option before" && return
+  [ ! -d ${SVNBSDDIR}/${_CATEGORY} ] && echo "${SVNBSDDIR}/${_CATEGORY} directory is missing" && return
+  [ ! -d ${SVNBSDDIR}/${_CATEGORY}/${_PORT} ] && echo "${SVNBSDDIR}/${_CATEGORY}/${_PORT} directory is missing" && return
+
+  $( cd ${SVNBSDDIR}/${_CATEGORY}/${_PORT}; svn diff > ../../../${_PORT}.diff )
 }
 
 args=$(getopt hlcsRi:I:p: $*)
