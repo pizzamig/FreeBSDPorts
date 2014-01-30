@@ -102,10 +102,10 @@ _git2svn()
   CATEGORY=$(_getCat $1)
 
   [ -z ${CATEGORY} ] && echo "No category found for $1" && return
-  [ -d $CATEGORY ] && echo "Directory ${CATEGORY} not found" && return
-  [ -d $CATEGORY/$1 ] && echo "Directory $CATEGORY/$1 not found" && return
-  [ -d ${2} ] && echo "Directory $2 not found" && return
-  [ -d ${2}/$CATEGORY ] && echo "Directory ${2}/$CATEGORY not found" & return
+  [ ! -d $CATEGORY ] && echo "Directory ${CATEGORY} not found" && return
+  [ ! -d $CATEGORY/$1 ] && echo "Directory $CATEGORY/$1 not found" && return
+  [ ! -d ${2} ] && echo "Directory $2 not found" && return
+  [ ! -d ${2}/$CATEGORY ] && echo "Directory ${2}/$CATEGORY not found" && return
 
   rsync -v -r --delete --exclude=.svn --exclude=.git $CATEGORY/$1 ${2}/$CATEGORY
 }
