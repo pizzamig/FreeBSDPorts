@@ -14,7 +14,6 @@ LICENSE=	GPLv2
 
 USES=		desthack gmake
 GNU_CONFIGURE=	yes
-#CONFIGURE_ARGS+=	--data-dir=\$${${DESTDIRNAME}}${DATADIR}
 
 PLIST_FILES=	bin/${PORTNAME} \
 		man/man1/${PORTNAME}.1.gz \
