@@ -12,7 +12,7 @@ COMMENT=	Compare files, ignoring numeric differences
 
 LICENSE=	GPLv2
 
-USES=		gmake
+USES=		gmake desthack
 GNU_CONFIGURE=	yes
 
 PLIST_FILES=	bin/${PORTNAME} \
@@ -22,7 +22,7 @@ PLIST_DIRS=	%%DATADIR%%
 
 PORTDOCS=	*.html *.pdf *.ps *.txt
 
-OPTIONS_DEFINE=	GMP
+OPTIONS_DEFINE=	DOCS GMP
 
 GMP_LIB_DEPENDS=	libgmp.so:${PORTSDIR}/math/gmp
 GMP_CFLAGS=	-I${LOCALBASE}/include
@@ -39,9 +39,12 @@ CONFIGURE_ARGS+=	--with-double
 .endif
 .endif
 
+post-patch:
+	@${REINPLACE_CMD} -e "s:%%DATADIR%%:\$\{DESTDIR\}${DATADIR}:g" ${WRKSRC}/Makefile.in
+
 post-install:
 	${STRIP_CMD} ${STAGEDIR}${PREFIX}/bin/${PORTNAME}
 	@${MKDIR} ${STAGEDIR}${DOCSDIR}
-	${INSTALL_DATA} ${PORTDOCS:S|^|${WRKSRC}/|} ${STAGEDIR}${DOCSDIR}
+	@${INSTALL_DATA} ${PORTDOCS:S|^|${WRKSRC}/|} ${STAGEDIR}${DOCSDIR}
 
 .include <bsd.port.mk>
