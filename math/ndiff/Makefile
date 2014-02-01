@@ -12,8 +12,9 @@ COMMENT=	Compare files, ignoring numeric differences
 
 LICENSE=	GPLv2
 
-USES=		gmake desthack
+USES=		desthack gmake
 GNU_CONFIGURE=	yes
+#CONFIGURE_ARGS+=	--data-dir=\$${${DESTDIRNAME}}${DATADIR}
 
 PLIST_FILES=	bin/${PORTNAME} \
 		man/man1/${PORTNAME}.1.gz \
@@ -40,11 +41,13 @@ CONFIGURE_ARGS+=	--with-double
 .endif
 
 post-patch:
-	@${REINPLACE_CMD} -e "s:%%DATADIR%%:\$\{DESTDIR\}${DATADIR}:g" ${WRKSRC}/Makefile.in
+	@${REINPLACE_CMD} -e 's:%%DATADIR%%:${DATADIR}:g' ${WRKSRC}/Makefile.in
 
 post-install:
 	${STRIP_CMD} ${STAGEDIR}${PREFIX}/bin/${PORTNAME}
+.if ${PORT_OPTIONS:MDOCS}
 	@${MKDIR} ${STAGEDIR}${DOCSDIR}
 	@${INSTALL_DATA} ${PORTDOCS:S|^|${WRKSRC}/|} ${STAGEDIR}${DOCSDIR}
+.endif
 
 .include <bsd.port.mk>

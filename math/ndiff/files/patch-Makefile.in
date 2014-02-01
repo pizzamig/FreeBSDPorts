@@ -6,7 +6,7 @@
  manext		= 1
 -shrlibdir	= $(shrlibtop)/$(PROGNAME)-$(VERSION)
 -shrlibtop       = $(prefix)/share/lib/$(PROGNAME)
-+shrlibdir	= %%DATADIR%%
++shrlibdir	= ${DESTDIR}/%%DATADIR%%
  
  FTPDIR		= /u/ftp/pub/misc
  
