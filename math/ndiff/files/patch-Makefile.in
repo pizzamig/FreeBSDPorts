@@ -1,12 +1,12 @@
---- Makefile.in.orig	Tue Dec 12 11:11:11 2000
-+++ Makefile.in	Wed Dec 15 23:53:21 2004
+--- Makefile.in.orig	2000-12-12 19:11:11.000000000 +0100
++++ Makefile.in	2014-02-02 00:27:57.000000000 +0100
 @@ -64,8 +64,7 @@
  catdir		= $(prefix)/man/cat$(manext)
  mandir		= $(prefix)/man/man$(manext)
  manext		= 1
 -shrlibdir	= $(shrlibtop)/$(PROGNAME)-$(VERSION)
 -shrlibtop       = $(prefix)/share/lib/$(PROGNAME)
-+shrlibdir	= ${DESTDIR}/%%DATADIR%%
++shrlibdir	= ${DESTDIR}//usr/local/share/ndiff
  
  FTPDIR		= /u/ftp/pub/misc
  
@@ -38,7 +38,14 @@
  		done ; \
  	fi
  
-@@ -635,15 +632,13 @@
+@@ -629,27 +626,25 @@
+ 	do \
+ 		g=`basename $$f .man` ; \
+ 		$(SEDCMD) $$f | $(CHECKSUM) > $(mandir)/$$g.$(manext) ; \
+-		$(CHMOD) 664 $(mandir)/$$g.$(manext) ; \
++		$(CHMOD) 644 $(mandir)/$$g.$(manext) ; \
+ 	done
+ 
  install-show:
  	@echo ''
  	@echo Installed files...
@@ -56,6 +63,13 @@
  	@if test -d $(shrlibdir) ; then true ; else echo Cannot create $(shrlibdir) ; exit 1 ; fi
  	for f in $(SHRLIBFILES) ; \
  	do \
+ 		$(SEDCMD) < $$f > $(shrlibdir)/$$f ; \
+ 	done
+-	$(CHMOD) 664 $(shrlibdir)/*
++	$(CHMOD) 644 $(shrlibdir)/*
+ 
+ maintainer-clean:	distclean cleandocs
+ 	@echo "This command is intended for maintainers to use;"
 @@ -703,7 +698,7 @@
  uninstall-exe:
  	-for f in $(PROGRAMS) ; \
