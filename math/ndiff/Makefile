@@ -41,11 +41,9 @@ CONFIGURE_ARGS+=	--with-double
 
 post-patch:
 	${REINPLACE_CMD} -e \
-	's|$$(shrlibtop)/$$(PROGNAME)-$$(VERSION)|$${DESTDIR}${DATADIR}|g' \
-	 ${WRKSRC}/Makefile.in
-	${REINPLACE_CMD} -e 's|.*shrlibtop.*||' ${WRKSRC}/Makefile.in
-	${REINPLACE_CMD} -e 's|664|644|' ${WRKSRC}/Makefile.in
-#	${REINPLACE_CMD} -e 's|775|755|' ${WRKSRC}/Makefile.in
+	's|$$(shrlibtop)/$$(PROGNAME)-$$(VERSION)|$${DESTDIR}${DATADIR}|; \
+	s|.*shrlibtop.*||; \
+	s|664|644|' ${WRKSRC}/Makefile.in
 
 post-install:
 	${STRIP_CMD} ${STAGEDIR}${PREFIX}/bin/${PORTNAME}
