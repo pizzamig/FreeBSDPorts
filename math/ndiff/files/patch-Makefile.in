@@ -1,24 +1,14 @@
 --- Makefile.in.orig	2000-12-12 19:11:11.000000000 +0100
-+++ Makefile.in	2014-02-02 00:27:57.000000000 +0100
-@@ -64,8 +64,7 @@
- catdir		= $(prefix)/man/cat$(manext)
- mandir		= $(prefix)/man/man$(manext)
- manext		= 1
--shrlibdir	= $(shrlibtop)/$(PROGNAME)-$(VERSION)
--shrlibtop       = $(prefix)/share/lib/$(PROGNAME)
-+shrlibdir	= ${DESTDIR}%%DATADIR%%
- 
- FTPDIR		= /u/ftp/pub/misc
- 
++++ Makefile.in	2014-02-02 11:56:29.000000000 +0100
 @@ -191,9 +190,9 @@
  
  DEFINES		= -DVERSION='"@VERSION@"' -DDATE='"@DATE@"' $(XDEFINES)
  
 -INCLUDES	= -I. -I$(prefix)/include $(XINCLUDES)
-+INCLUDES	= -I. $(XINCLUDES)
++INCLUDES	?= -I. $(XINCLUDES)
  
 -LDFLAGS		= @LDFLAGS@ -L$(prefix)/lib $(XLDFLAGS)
-+LDFLAGS		= @LDFLAGS@ $(XLDFLAGS)
++LDFLAGS		?= @LDFLAGS@ $(XLDFLAGS)
  
  LIBS		= @LIBS@ $(XLIBS)
  
@@ -34,18 +24,11 @@
  			$(SEDCMD) $$f | $(CHECKSUM) > $(bindir)/$$g ; \
 -			$(LN) $(bindir)/$$g $(bindir)/$$g-$(VERSION) ; \
 -			$(CHMOD) 775 $(bindir)/$$g $(bindir)/$$g-$(VERSION) ; \
-+			$(CHMOD) 775 $(bindir)/$$g ; \
++			$(CHMOD) 755 $(bindir)/$$g ; \
  		done ; \
  	fi
  
-@@ -629,27 +626,25 @@
- 	do \
- 		g=`basename $$f .man` ; \
- 		$(SEDCMD) $$f | $(CHECKSUM) > $(mandir)/$$g.$(manext) ; \
--		$(CHMOD) 664 $(mandir)/$$g.$(manext) ; \
-+		$(CHMOD) 644 $(mandir)/$$g.$(manext) ; \
- 	done
- 
+@@ -635,7 +632,7 @@
  install-show:
  	@echo ''
  	@echo Installed files...
@@ -54,22 +37,6 @@
  	@$(LS) -l $(mandir)/$(PROGNAME).$(manext)
  	@if test -d $(shrlibdir) ; then $(LS) -lR $(shrlibdir)/* ; fi
  	@echo ''
- 
- install-shrlib:	uninstall-shrlib
--	-$(MKDIR) $(shrlibtop)
--	@if test -d $(shrlibtop) ; then true ; else echo Cannot create $(shrlibtop) ; exit 1 ; fi
--	-$(MKDIR) $(shrlibdir)
-+	-$(MKDIR) -p $(shrlibdir)
- 	@if test -d $(shrlibdir) ; then true ; else echo Cannot create $(shrlibdir) ; exit 1 ; fi
- 	for f in $(SHRLIBFILES) ; \
- 	do \
- 		$(SEDCMD) < $$f > $(shrlibdir)/$$f ; \
- 	done
--	$(CHMOD) 664 $(shrlibdir)/*
-+	$(CHMOD) 644 $(shrlibdir)/*
- 
- maintainer-clean:	distclean cleandocs
- 	@echo "This command is intended for maintainers to use;"
 @@ -703,7 +698,7 @@
  uninstall-exe:
  	-for f in $(PROGRAMS) ; \

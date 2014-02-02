@@ -12,7 +12,7 @@ COMMENT=	Compare files, ignoring numeric differences
 
 LICENSE=	GPLv2
 
-USES=		desthack gmake
+USES=		desthack
 GNU_CONFIGURE=	yes
 
 PLIST_FILES=	bin/${PORTNAME} \
@@ -40,7 +40,12 @@ CONFIGURE_ARGS+=	--with-double
 .endif
 
 post-patch:
-	@${REINPLACE_CMD} -e 's:%%DATADIR%%:${DATADIR}:g' ${WRKSRC}/Makefile.in
+	${REINPLACE_CMD} -e \
+	's|$$(shrlibtop)/$$(PROGNAME)-$$(VERSION)|$${DESTDIR}${DATADIR}|g' \
+	 ${WRKSRC}/Makefile.in
+	${REINPLACE_CMD} -e 's|.*shrlibtop.*||' ${WRKSRC}/Makefile.in
+	${REINPLACE_CMD} -e 's|664|644|' ${WRKSRC}/Makefile.in
+#	${REINPLACE_CMD} -e 's|775|755|' ${WRKSRC}/Makefile.in
 
 post-install:
 	${STRIP_CMD} ${STAGEDIR}${PREFIX}/bin/${PORTNAME}
