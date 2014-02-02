@@ -6,7 +6,7 @@
  manext		= 1
 -shrlibdir	= $(shrlibtop)/$(PROGNAME)-$(VERSION)
 -shrlibtop       = $(prefix)/share/lib/$(PROGNAME)
-+shrlibdir	= ${DESTDIR}//usr/local/share/ndiff
++shrlibdir	= ${DESTDIR}%%DATADIR%%
  
  FTPDIR		= /u/ftp/pub/misc
  
