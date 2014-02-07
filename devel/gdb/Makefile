@@ -2,7 +2,7 @@
 # $FreeBSD: head/devel/gdb/Makefile 340871 2014-01-23 23:48:53Z nemysis $
 
 PORTNAME=	gdb
-PORTVERSION=	7.6.2
+PORTVERSION=	7.7
 CATEGORIES=	devel
 MASTER_SITES=	GNU
 
@@ -17,11 +17,11 @@ USE_CSTD=	gnu89
 GNU_CONFIGURE=	yes
 CONFIGURE_ENV=	CONFIGURED_M4=m4 CONFIGURED_BISON=byacc
 CONFIGURE_ARGS=	--program-suffix=${PORTVERSION:S/.//g} \
+		--enable-targets=all \
 		--with-gdb-datadir=${PREFIX}/share/gdb${PORTVERSION:S/.//g} \
 		--with-separate-debug-dir=/usr/lib/debug \
 		${ICONV_CONFIGURE_ARG} \
-		--without-libunwind-ia64 \
-		--enable-targets=all
+		--without-libunwind-ia64
 CFLAGS:=	${CFLAGS:C/ +$//}	# blanks at EOL creep in sometimes
 CFLAGS+=	-DRL_NO_COMPAT
 EXCLUDE=	dejagnu expect sim texinfo intl
@@ -89,7 +89,7 @@ post-patch:
 do-install:
 	${INSTALL_PROGRAM} ${WRKSRC}/gdb/gdb \
 		${STAGEDIR}${PREFIX}/bin/gdb${VER}
-	${INSTALL_MAN} ${WRKSRC}/gdb/gdb.1 \
+	${INSTALL_MAN} ${WRKSRC}/gdb/doc/gdb.1 \
 		${STAGEDIR}${MAN1PREFIX}/man/man1/gdb${VER}.1
 
 .if ${PORT_OPTIONS:MTUI}

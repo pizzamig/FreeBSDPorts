@@ -1289,14 +1289,14 @@ fbsd_thread_get_local_address(struct target_ops *ops,
 static int
 tsd_cb (thread_key_t key, void (*destructor)(void *), void *ignore)
 {
-  struct minimal_symbol *ms;
+  struct bound_minimal_symbol bms;
   const char *name;
 
-  ms = lookup_minimal_symbol_by_pc (extract_func_ptr (&destructor));
-  if (!ms)
+  bms = lookup_minimal_symbol_by_pc (extract_func_ptr (&destructor));
+  if (!bms.minsym)
     name = "???";
   else
-    name = SYMBOL_PRINT_NAME (ms);
+    name = SYMBOL_PRINT_NAME (bms.minsym);
 
   printf_filtered ("Key %d, destructor %p <%s>\n", key, destructor, name);
   return 0;
