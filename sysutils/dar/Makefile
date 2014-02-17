@@ -2,7 +2,7 @@
 # $FreeBSD: head/sysutils/dar/Makefile 343635 2014-02-10 13:58:28Z ehaupt $
 
 PORTNAME=	dar
-PORTVERSION=	2.3.11
+PORTVERSION=	2.3.12
 CATEGORIES=	sysutils archivers
 MASTER_SITES=	SF
 
