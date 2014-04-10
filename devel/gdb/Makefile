@@ -23,7 +23,7 @@ CONFIGURE_ARGS=	--program-suffix=${PORTVERSION:S/.//g} \
 		${ICONV_CONFIGURE_ARG} \
 		--without-libunwind-ia64
 CFLAGS:=	${CFLAGS:C/ +$//}	# blanks at EOL creep in sometimes
-CFLAGS+=	-DRL_NO_COMPAT
+CFLAGS+=	-DRL_NO_COMPAT -Wno-unused-function
 EXCLUDE=	dejagnu expect sim texinfo intl
 EXTRACT_AFTER_ARGS=	${EXCLUDE:S/^/--exclude /}
 
