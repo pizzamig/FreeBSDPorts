@@ -11,8 +11,7 @@ COMMENT=	GNU GDB of newer version than comes with the system
 
 LICENSE=	GPLv3
 
-USE_BZIP2=	yes
-USES=		iconv gmake
+USES=		iconv gmake libtool tar:bzip2
 USE_CSTD=	gnu89
 GNU_CONFIGURE=	yes
 CONFIGURE_ENV=	CONFIGURED_M4=m4 CONFIGURED_BISON=byacc
