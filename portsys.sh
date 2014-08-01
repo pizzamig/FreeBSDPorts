@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-CAT="AUDIO DEVEL TEXTPROC SYSUTILS"
-AUDIO="ctronome" # ksmp3play # timidity++ timidity++-emacs timidity++-motif timidity++-slang timidity++-tcltk timidity++-xaw timidity++-xskin
+CAT="AUDIO DEVEL MATH TEXTPROC"
+AUDIO="ctronome" # ksmp3play 
 BENCHMARK="" # nbench unixbench sysbench libmicro
 DATABASES="" # akonadi-googledata
 DEVEL="gdb" # cross-gdb bcpp
 GAMES="" # xlife doom conquest
 MATH="ndiff"
 MULTIMEDIA="" # oggvideotools
-SYSUTILS="dar"  # kdirstat backupme
+SYSUTILS=""  # kdirstat backupme
 TEXTPROC="kdiff3"
 
 SVNURL="https://svn0.eu.FreeBSD.org/ports/head"
@@ -40,11 +40,6 @@ _getCat()
   for p in $TEXTPROC; do
     if [ $p = $1 ]; then
       CATEGORY="textproc"
-    fi
-  done
-  for p in $SYSUTILS; do
-    if [ $p = $1 ]; then
-      CATEGORY="sysutils"
     fi
   done
   echo $CATEGORY
