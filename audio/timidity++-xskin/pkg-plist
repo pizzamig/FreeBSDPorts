@@ -1,7 +1,0 @@
-bin/xskinmidi
-%%TIMID_LIBDIR%%/if_xskin.so
-%%PORTDOCS%%%%DOCSDIR%%/README.xskin
-%%PORTDOCS%%%%DOCSDIR%%/ja/README.xskin
-%%PORTDOCS%%@dirrmtry %%DOCSDIR%%/ja
-%%PORTDOCS%%@dirrmtry %%DOCSDIR%%
-@dirrmtry %%TIMID_LIBDIR%%
