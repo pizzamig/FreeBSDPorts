@@ -1,5 +1,5 @@
 # Created by: Steven Kreuzer <skreuzer@FreeBSD.org>
-# $FreeBSD: head/devel/gdb/Makefile 340871 2014-01-23 23:48:53Z nemysis $
+# $FreeBSD: head/devel/gdb/Makefile 364055 2014-08-04 21:39:51Z pi $
 
 PORTNAME=	gdb
 PORTVERSION=	7.8
@@ -101,9 +101,9 @@ do-install:
 .endif
 
 .if ${PORT_OPTIONS:MPYTHON}
-	(cd ${WRKSRC}/gdb; ${GMAKE} DESTDIR=${STAGEDIR} install-python )
+	(cd ${WRKSRC}/gdb; ${SETENV} ${MAKE_ENV} ${MAKE_CMD} ${MAKE_ARGS} install-python )
 	(cd ${WRKSRC}/gdb/data-directory ; \
-		${GMAKE} DESTDIR=${STAGEDIR} install-python )
+		${SETENV} ${MAKE_ENV} ${MAKE_CMD} ${MAKE_ARGS} install-python )
 .endif
 
 .if ${PORT_OPTIONS:MPYTHON}
