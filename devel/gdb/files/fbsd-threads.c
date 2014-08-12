@@ -1,4 +1,4 @@
-/* $FreeBSD$ */
+/* $FreeBSD: head/devel/gdb/files/fbsd-threads.c 364054 2014-08-04 20:50:49Z pi $ */
 /* FreeBSD libthread_db assisted debugging support.
    Copyright 1999, 2000, 2001 Free Software Foundation, Inc.
 
@@ -1502,14 +1502,14 @@ ps_err_e
 ps_pglobal_lookup (struct ps_prochandle *ph, const char *obj,
    const char *name, psaddr_t *sym_addr)
 {
-  struct minimal_symbol *ms;
+  struct bound_minimal_symbol ms;
   CORE_ADDR addr;
 
-  ms = lookup_minimal_symbol (name, NULL, NULL).minsym;
-  if (ms == NULL)
+  ms = lookup_minimal_symbol (name, NULL, NULL);
+  if (!ms.minsym) 
     return PS_NOSYM;
 
-  *sym_addr = ms->mginfo.value.address;
+  *sym_addr = BMSYMBOL_VALUE_ADDRESS (ms);
   return PS_OK;
 }
 
