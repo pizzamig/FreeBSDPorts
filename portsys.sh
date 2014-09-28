@@ -8,7 +8,7 @@ DEVEL="gdb" # cross-gdb bcpp
 GAMES="" # xlife doom conquest
 MATH="ndiff"
 MULTIMEDIA="" # oggvideotools
-SYSUTILS="" # kdirstat backupme
+SYSUTILS=""  # kdirstat backupme
 TEXTPROC="kdiff3"
 
 SVNURL="https://svn0.eu.FreeBSD.org/ports/head"

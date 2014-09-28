@@ -1,8 +1,9 @@
 # Created by: Steven Kreuzer <skreuzer@FreeBSD.org>
-# $FreeBSD: head/devel/gdb/Makefile 340871 2014-01-23 23:48:53Z nemysis $
+# $FreeBSD: head/devel/gdb/Makefile 364713 2014-08-12 15:39:58Z tijl $
 
 PORTNAME=	gdb
-PORTVERSION=	7.6.2
+PORTVERSION=	7.8
+PORTREVISION=	2
 CATEGORIES=	devel
 MASTER_SITES=	GNU
 
@@ -11,19 +12,18 @@ COMMENT=	GNU GDB of newer version than comes with the system
 
 LICENSE=	GPLv3
 
-USE_BZIP2=	yes
-USES=		iconv gmake
+USES=		iconv gmake libtool tar:xz
 USE_CSTD=	gnu89
 GNU_CONFIGURE=	yes
 CONFIGURE_ENV=	CONFIGURED_M4=m4 CONFIGURED_BISON=byacc
 CONFIGURE_ARGS=	--program-suffix=${PORTVERSION:S/.//g} \
+		--enable-targets=all \
 		--with-gdb-datadir=${PREFIX}/share/gdb${PORTVERSION:S/.//g} \
 		--with-separate-debug-dir=/usr/lib/debug \
 		${ICONV_CONFIGURE_ARG} \
-		--without-libunwind-ia64 \
-		--enable-targets=all
+		--without-libunwind-ia64
 CFLAGS:=	${CFLAGS:C/ +$//}	# blanks at EOL creep in sometimes
-CFLAGS+=	-DRL_NO_COMPAT
+CFLAGS+=	-DRL_NO_COMPAT -Wno-unused-function -Wno-unused-variable
 EXCLUDE=	dejagnu expect sim texinfo intl
 EXTRACT_AFTER_ARGS=	${EXCLUDE:S/^/--exclude /}
 
@@ -56,6 +56,7 @@ EXPAT_CONFIGURE_OFF=	--without-expat
 EXPAT_LIB_DEPENDS=	libexpat.so:${PORTSDIR}/textproc/expat2
 PYTHON_CONFIGURE_ON=	--with-python=${PYTHON_CMD}
 PYTHON_CONFIGURE_OFF=	--without-python
+PORT_READLINE_EXTRA_PATCHES=	${FILESDIR}/extrapatch-gdb-tui-tui-io.c
 PORT_READLINE_USES=	readline:port
 TUI_CONFIGURE_ENABLE=	tui
 
@@ -70,7 +71,7 @@ USE_PYTHON=	2
 .endif
 
 .if ${PORT_OPTIONS:MTHREADS}
-EXTRA_PATCHES=	${FILESDIR}/extrapatch-gdb-configure.tgt \
+EXTRA_PATCHES+=	${FILESDIR}/extrapatch-gdb-configure.tgt \
 		${FILESDIR}/extrapatch-gdb-Makefile.in
 .endif
 
@@ -89,7 +90,7 @@ post-patch:
 do-install:
 	${INSTALL_PROGRAM} ${WRKSRC}/gdb/gdb \
 		${STAGEDIR}${PREFIX}/bin/gdb${VER}
-	${INSTALL_MAN} ${WRKSRC}/gdb/gdb.1 \
+	${INSTALL_MAN} ${WRKSRC}/gdb/doc/gdb.1 \
 		${STAGEDIR}${MAN1PREFIX}/man/man1/gdb${VER}.1
 
 .if ${PORT_OPTIONS:MTUI}
@@ -101,9 +102,9 @@ do-install:
 .endif
 
 .if ${PORT_OPTIONS:MPYTHON}
-	(cd ${WRKSRC}/gdb; ${GMAKE} DESTDIR=${STAGEDIR} install-python )
+	(cd ${WRKSRC}/gdb; ${SETENV} ${MAKE_ENV} ${MAKE_CMD} ${MAKE_ARGS} install-python )
 	(cd ${WRKSRC}/gdb/data-directory ; \
-		${GMAKE} DESTDIR=${STAGEDIR} install-python )
+		${SETENV} ${MAKE_ENV} ${MAKE_CMD} ${MAKE_ARGS} install-python )
 .endif
 
 .if ${PORT_OPTIONS:MPYTHON}

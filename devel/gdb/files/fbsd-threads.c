@@ -1,4 +1,4 @@
-/* $FreeBSD$ */
+/* $FreeBSD: head/devel/gdb/files/fbsd-threads.c 364713 2014-08-12 15:39:58Z tijl $ */
 /* FreeBSD libthread_db assisted debugging support.
    Copyright 1999, 2000, 2001 Free Software Foundation, Inc.
 
@@ -155,7 +155,7 @@ static void fbsd_thread_find_new_threads (struct target_ops *ops);
 static int fbsd_thread_alive (struct target_ops *ops, ptid_t ptid);
 static void attach_thread (ptid_t ptid, const td_thrhandle_t *th_p,
                const td_thrinfo_t *ti_p, int verbose);
-static void fbsd_thread_detach (struct target_ops *ops, char *args,
+static void fbsd_thread_detach (struct target_ops *ops, const char *args,
 				int from_tty);
 
 CORE_ADDR fbsd_thread_get_local_address(struct target_ops *ops,
@@ -315,7 +315,7 @@ get_current_lwp (int pid)
 }
 
 static void
-get_current_thread ()
+get_current_thread (void)
 {
   td_thrhandle_t th;
   td_thrinfo_t ti;
@@ -325,6 +325,11 @@ get_current_thread ()
   lwp = get_current_lwp (proc_handle.pid);
   tmp = BUILD_LWP (lwp, proc_handle.pid);
   ptid = thread_from_lwp (tmp, &th, &ti);
+  if (in_thread_list (inferior_ptid) )
+    {
+      struct thread_info * ti_inf = inferior_thread();
+      ti_inf->ptid = ptid;
+    }
   if (!in_thread_list (ptid))
     {
       attach_thread (ptid, &th, &ti, 1);
@@ -439,7 +444,6 @@ static void
 fbsd_thread_activate (void)
 {
   fbsd_thread_active = 1;
-  init_thread_list();
   if (target_has_execution)
     enable_thread_event_reporting ();
   fbsd_thread_find_new_threads (NULL);
@@ -523,7 +527,7 @@ fbsd_thread_new_objfile (struct objfile *objfile)
 }
 
 static void
-fbsd_thread_detach (struct target_ops *ops, char *args, int from_tty)
+fbsd_thread_detach (struct target_ops *ops, const char *args, int from_tty)
 {
   struct target_ops *beneath = find_target_beneath (ops);
 
@@ -1289,14 +1293,14 @@ fbsd_thread_get_local_address(struct target_ops *ops,
 static int
 tsd_cb (thread_key_t key, void (*destructor)(void *), void *ignore)
 {
-  struct minimal_symbol *ms;
+  struct bound_minimal_symbol bms;
   const char *name;
 
-  ms = lookup_minimal_symbol_by_pc (extract_func_ptr (&destructor));
-  if (!ms)
+  bms = lookup_minimal_symbol_by_pc (extract_func_ptr (&destructor));
+  if (!bms.minsym)
     name = "???";
   else
-    name = SYMBOL_PRINT_NAME (ms);
+    name = MSYMBOL_PRINT_NAME (bms.minsym);
 
   printf_filtered ("Key %d, destructor %p <%s>\n", key, destructor, name);
   return 0;
@@ -1502,14 +1506,14 @@ ps_err_e
 ps_pglobal_lookup (struct ps_prochandle *ph, const char *obj,
    const char *name, psaddr_t *sym_addr)
 {
-  struct minimal_symbol *ms;
+  struct bound_minimal_symbol ms;
   CORE_ADDR addr;
 
   ms = lookup_minimal_symbol (name, NULL, NULL);
-  if (ms == NULL)
+  if (!ms.minsym) 
     return PS_NOSYM;
 
-  *sym_addr = SYMBOL_VALUE_ADDRESS (ms);
+  *sym_addr = BMSYMBOL_VALUE_ADDRESS (ms);
   return PS_OK;
 }
 
