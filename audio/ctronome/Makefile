@@ -2,7 +2,7 @@
 # $FreeBSD: audio/ctronome/Makefile 330662 2013-10-17 18:21:55Z danilo $
 
 PORTNAME=	ctronome
-PORTVERSION=	0.5.5
+PORTVERSION=	0.5.6
 CATEGORIES=	audio
 MASTER_SITES=	http://ctronome.kign.org/source/
 
