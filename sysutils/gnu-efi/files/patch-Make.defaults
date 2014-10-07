@@ -1,0 +1,11 @@
+--- Make.defaults.bak	2014-10-07 17:21:09.000000000 +0200
++++ Make.defaults	2014-10-07 17:23:35.000000000 +0200
+@@ -45,7 +45,7 @@
+ # Where to install the package. GNU-EFI will create and access
+ # lib and include under the root
+ #
+-INSTALLROOT  := /
++INSTALLROOT  := GNUEFISTAGEDIR
+ PREFIX       := /usr/local
+ LIBDIR 	     := $(PREFIX)/lib
+ INSTALL	     := install
