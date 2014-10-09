@@ -1,16 +1,24 @@
+# Created by: Luca Pizzamiglio <luca.pizzamiglio@gmail.com>
+# $FreeBSD$
+
 PORTNAME=	gnu-efi
 MAINVERSION=	3.0
 PORTVERSION=	${MAINVERSION}w
-
-DISTNAME=	${PORTNAME}_${PORTVERSION}.orig
 CATEGORIES=	sysutils
 MASTER_SITES=	SF/${PORTNAME}/
+DISTNAME=	${PORTNAME}_${PORTVERSION}.orig
 
-WRKSRC=	${WRKDIR}/${PORTNAME}-${MAINVERSION}
-USES+=	gmake desthack
+MAINTAINER=	luca.pizzamiglio@gmail.com
+COMMENT=	The gnu-efi library, useful for several efi tools
 
-USE_GCC=	4.8
+LICENSE=	BSD
+
 MAKE_JOBS_UNSAFE=	yes
+USES+=	gmake
+USE_GCC=	4.8+
+WRKSRC=	${WRKDIR}/${PORTNAME}-${MAINVERSION}
+
+BUILD_DEPENDS+=	${LOCALBASE}/bin/objdump:${PORTSDIR}/devel/binutils
 
 ONLY_FOR_ARCHS=	i386 amd64
 
@@ -32,8 +40,8 @@ post-patch:
 	@${REINPLACE_CMD} -e "s|GNUEFISTAGEDIR|${STAGEDIR}|" \
 		${WRKSRC}/Make.defaults
 	@${REINPLACE_CMD} -e 's|$$$$(dir $$$$@)|$$$$(@D)|' \
-		${WRKSRC}/gnuefi/Makefile 
+		${WRKSRC}/gnuefi/Makefile
 	@${REINPLACE_CMD} -e 's|$$$$(dir $$$$@)|$$$$(@D)|' \
-		${WRKSRC}/inc/Makefile 
+		${WRKSRC}/inc/Makefile
 
 .include <bsd.port.mk>
