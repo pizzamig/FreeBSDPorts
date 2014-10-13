@@ -2,7 +2,7 @@
 # $FreeBSD: textproc/kdiff3/Makefile 339314 2014-01-10 04:48:02Z tabthorpe $
 
 PORTNAME=	kdiff3
-PORTVERSION=	0.9.97
+PORTVERSION=	0.9.98
 #PORTREVISION=	0
 CATEGORIES=	textproc kde
 MASTER_SITES=	SF

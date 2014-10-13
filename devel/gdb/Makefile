@@ -3,7 +3,7 @@
 
 PORTNAME=	gdb
 PORTVERSION=	7.8
-PORTREVISION=	2
+PORTREVISION=	3
 CATEGORIES=	devel
 MASTER_SITES=	GNU
 
@@ -11,6 +11,7 @@ MAINTAINER=	luca.pizzamiglio@gmail.com
 COMMENT=	GNU GDB of newer version than comes with the system
 
 LICENSE=	GPLv3
+LICENSE_FILE=	${WRKSRC}/COPYING3
 
 USES=		iconv gmake libtool tar:xz
 USE_CSTD=	gnu89
