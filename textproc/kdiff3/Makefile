@@ -8,9 +8,10 @@ CATEGORIES=	textproc kde
 MASTER_SITES=	SF
 
 MAINTAINER=	luca.pizzamiglio@gmail.com
-COMMENT=	A KDE4 graphical frontend for diff
+COMMENT=	KDE4 graphical frontend for diff
 
 LICENSE=	GPLv2
+LICENSE_FILE=	${WRKSRC}/COPYING
 
 USE_KDE4=	kdelibs libkonq kdeprefix kdehier automoc4
 USE_QT4=	moc_build qmake_build rcc_build uic_build
