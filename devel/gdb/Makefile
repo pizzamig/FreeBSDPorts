@@ -1,5 +1,5 @@
 # Created by: Steven Kreuzer <skreuzer@FreeBSD.org>
-# $FreeBSD: head/devel/gdb/Makefile 364713 2014-08-12 15:39:58Z tijl $
+# $FreeBSD: head/devel/gdb/Makefile 371280 2014-10-20 16:04:12Z mva $
 
 PORTNAME=	gdb
 PORTVERSION=	7.8
@@ -11,7 +11,6 @@ MAINTAINER=	luca.pizzamiglio@gmail.com
 COMMENT=	GNU GDB of newer version than comes with the system
 
 LICENSE=	GPLv3
-LICENSE_FILE=	${WRKSRC}/COPYING3
 
 USES=		iconv gmake libtool tar:xz
 USE_CSTD=	gnu89
@@ -57,6 +56,7 @@ EXPAT_CONFIGURE_OFF=	--without-expat
 EXPAT_LIB_DEPENDS=	libexpat.so:${PORTSDIR}/textproc/expat2
 PYTHON_CONFIGURE_ON=	--with-python=${PYTHON_CMD}
 PYTHON_CONFIGURE_OFF=	--without-python
+PYTHON_USES=		python:2
 PORT_READLINE_EXTRA_PATCHES=	${FILESDIR}/extrapatch-gdb-tui-tui-io.c
 PORT_READLINE_USES=	readline:port
 TUI_CONFIGURE_ENABLE=	tui
@@ -65,10 +65,6 @@ TUI_CONFIGURE_ENABLE=	tui
 
 .if ! ${PORT_OPTIONS:MBUNDLED_READLINE}
 EXCLUDE+=	readline
-.endif
-
-.if ${PORT_OPTIONS:MPYTHON}
-USE_PYTHON=	2
 .endif
 
 .if ${PORT_OPTIONS:MTHREADS}
