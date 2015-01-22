@@ -1,0 +1,1061 @@
+Index: Makefile
+===================================================================
+--- Makefile	(revision 373690)
++++ Makefile	(working copy)
+@@ -5,7 +5,9 @@
+ PORTVERSION=	7.8.1
+ PORTREVISION=	1
+ CATEGORIES=	devel
+-MASTER_SITES=	GNU
++MASTER_SITES=	GNU:gdb http://aldan.algebra.com/~mi/:gdbtk
++DISTFILES=	${PORTNAME}-${PORTVERSION}${EXTRACT_SUFX}:gdb
++EXTRACT_ONLY=	${PORTNAME}-${PORTVERSION}${EXTRACT_SUFX}
+ 
+ MAINTAINER=	luca.pizzamiglio@gmail.com
+ COMMENT=	GNU GDB of newer version than comes with the system
+@@ -32,7 +34,7 @@
+ 
+ ONLY_FOR_ARCHS=	i386 amd64 powerpc powerpc64	# untested elsewhere, might work
+ 
+-OPTIONS_DEFINE=	DEBUG EXPAT GDB_LINK PYTHON THREADS TUI
++OPTIONS_DEFINE=	DEBUG EXPAT GDB_LINK PYTHON THREADS TUI INSIGHT
+ 
+ OPTIONS_DEFAULT=	GDB_LINK THREADS TUI PORT_READLINE
+ 
+@@ -44,6 +46,7 @@
+ BUNDLED_READLINE_DESC=	from gdb distfile
+ PORT_READLINE_DESC=	from devel/readline port
+ TUI_DESC=		Text User Interface enabled
++INSIGHT_DESC=		Tcl/Tk GUI (experimental!)
+ 
+ OPTIONS_SUB=	yes
+ 
+@@ -63,6 +66,33 @@
+ 
+ .include <bsd.port.options.mk>
+ 
++.if ${PORT_OPTIONS:MINSIGHT}
++PKGNAMESUFFIX=	-insight
++USES+=		tk
++LIB_DEPENDS=	libitk.so:${PORTSDIR}/x11-toolkits/itk
++RUN_DEPENDS=	${LOCALBASE}/lib/iwidgets:${PORTSDIR}/x11-toolkits/iwidgets	\
++		${LOCALBASE}/lib/Tktable2.10/pkgIndex.tcl:${PORTSDIR}/x11-toolkits/tktable
++DISTFILES+=	gdbtk-20140114.tar.xz:gdbtk
++EXTRA_PATCHES=	${FILESDIR}/itcl33-patch \
++		${FILESDIR}/extrapatch-configure-for-tcl \
++		${FILESDIR}/extrapatch-gdbtk \
++		${FILESDIR}/extrapatch-libgui \
++		${FILESDIR}/extrapatch-system-tkTable
++CONFIGURE_ARGS+=--enable-gdbtk \
++		--with-tclconfig=${TCL_LIBDIR} \
++		--with-tclinclude=${TCL_INCLUDEDIR}/generic \
++		--with-tkconfig=${TK_LIBDIR} \
++		--with-tkinclude=${TK_INCLUDEDIR}/generic \
++		--with-itclconfig=${LOCALBASE}/lib/itcl3.4 \
++		--with-itkconfig=${LOCALBASE}/lib/itk3.3
++
++post-extract:
++	${TAR} -C ${WRKSRC} --exclude tkTable\* -xpf ${DISTDIR}/${_DISTFILES:Mgdbtk*}
++.else
++PLIST_SUB+=	INSIGHT='@comment '
++CONFLICTS+=	gdb-insight*
++.endif
++
+ .if ! ${PORT_OPTIONS:MBUNDLED_READLINE}
+ EXCLUDE+=	readline
+ .endif
+@@ -92,6 +122,22 @@
+ 
+ .if ${PORT_OPTIONS:MTUI}
+ 	${LN} -sf gdb${VER} ${STAGEDIR}${PREFIX}/bin/gdbtui${VER}
++.endif}
++.if ${PORT_OPTIONS:MINSIGHT}
++	${LN} -sf gdb${VER} ${STAGEDIR}${PREFIX}/bin/insight
++	@${MKDIR} ${STAGEDIR}${PREFIX}/share/redhat/gui
++	${CP} -p ${WRKSRC}/libgui/library/*.tcl	\
++		${WRKSRC}/libgui/library/tclIndex \
++			${STAGEDIR}${PREFIX}/share/redhat/gui/
++	@${MKDIR} ${STAGEDIR}${PREFIX}/lib/insight1.0
++	${CP} -Rp ${WRKSRC}/gdb/gdbtk/library/*.tcl	\
++		${WRKSRC}/gdb/gdbtk/library/*.itcl	\
++		${WRKSRC}/gdb/gdbtk/library/*.ith	\
++		${WRKSRC}/gdb/gdbtk/library/*.itb	\
++		${WRKSRC}/gdb/gdbtk/library/help	\
++		${WRKSRC}/gdb/gdbtk/library/images*	\
++		${WRKSRC}/gdb/gdbtk/library/tclIndex	\
++			${STAGEDIR}${PREFIX}/lib/insight1.0
+ .endif
+ 
+ .if ${PORT_OPTIONS:MGDB_LINK}
+Index: distinfo
+===================================================================
+--- distinfo	(revision 373690)
++++ distinfo	(working copy)
+@@ -1,2 +1,4 @@
+ SHA256 (gdb-7.8.1.tar.xz) = 497722b58386f4428c3474281eb3ef1c872404998b6ace907edb3bba1fabdc35
+ SIZE (gdb-7.8.1.tar.xz) = 17669136
++SHA256 (gdbtk-20140114.tar.xz) = 7365b093aa03e39c5881ab5ffef980f66cf86a78b983e72233fc5c3118fc7037
++SIZE (gdbtk-20140114.tar.xz) = 716412
+Index: files/extrapatch-configure-for-tcl
+===================================================================
+--- files/extrapatch-configure-for-tcl	(revision 0)
++++ files/extrapatch-configure-for-tcl	(working copy)
+@@ -0,0 +1,131 @@
++--- libgui/configure	2009-11-09 14:23:12.000000000 -0500
+++++ libgui/configure	2014-11-30 17:10:33.000000000 -0500
++@@ -5039,40 +5039,7 @@
++   # Using installed Tcl/Tk
++ 
++-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl private headers" >&5
++-$as_echo_n "checking for Tcl private headers... " >&6; }
++-  private_dir=""
++-  dir=`echo ${TCL_INCLUDE_SPEC}/tcl-private/generic | sed -e s/-I//`
++-  if test -f ${dir}/tclInt.h ; then
++-    private_dir=${dir}
++-  fi
++-
++-  if test x"${private_dir}" = x; then
++-    as_fn_error "could not find private Tcl headers" "$LINENO" 5
++-  else
++-    TCL_PRIVATE_INCLUDE="-I${private_dir}"
++-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${private_dir}" >&5
++-$as_echo "${private_dir}" >&6; }
++-  fi
++-
++-
++-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tk private headers" >&5
++-$as_echo_n "checking for Tk private headers... " >&6; }
++-  private_dir=""
++-  dir=`echo ${TK_INCLUDE_SPEC}/tk-private/generic | sed -e s/-I//`
++-  if test -f ${dir}/tkInt.h; then
++-    private_dir=${dir}
++-  fi
++-
++-  if test x"${private_dir}" = x; then
++-    as_fn_error "could not find Tk private headers" "$LINENO" 5
++-  else
++-    TK_PRIVATE_INCLUDE="-I${private_dir}"
++-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${private_dir}" >&5
++-$as_echo "${private_dir}" >&6; }
++-  fi
++-
++-  TCL_INCLUDES="${TCL_INCLUDE_SPEC} ${TCL_PRIVATE_INCLUDE}"
+++  TCL_INCLUDES="${TCL_INCLUDE_SPEC}"
++   TCL_LIBRARY=${TCL_LIB_SPEC}
++-  TK_INCLUDES="${TK_INCLUDE_SPEC} ${TK_PRIVATE_INCLUDE}"
+++  TK_INCLUDES="${TK_INCLUDE_SPEC}"
++   TK_LIBRARY=${TK_LIB_SPEC}
++ fi
++--- gdb/configure	2014-10-29 15:45:50.000000000 -0400
+++++ gdb/configure	2014-11-30 17:18:18.000000000 -0500
++@@ -14371,37 +14372,8 @@
++         fi
++ 
++-        # Find Tcl private headers
++-        if test x"${intree}" = xno; then
++ 
++-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl private headers" >&5
++-$as_echo_n "checking for Tcl private headers... " >&6; }
++-  private_dir=""
++-  dir=`echo ${TCL_INCLUDE_SPEC}/tcl-private/generic | sed -e s/-I//`
++-  if test -f ${dir}/tclInt.h ; then
++-    private_dir=${dir}
++-  fi
++-
++-  if test x"${private_dir}" = x; then
++-    as_fn_error "could not find private Tcl headers" "$LINENO" 5
++-  else
++-    TCL_PRIVATE_INCLUDE="-I${private_dir}"
++-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${private_dir}" >&5
++-$as_echo "${private_dir}" >&6; }
++-  fi
++-
++-	  TCL_INCLUDE="${TCL_INCLUDE_SPEC} ${TCL_PRIVATE_INCLUDE}"
+++	  TCL_INCLUDE="${TCL_INCLUDE_SPEC}"
++           TCL_LIBRARY="${TCL_LIB_SPEC}"
++           TCL_DEPS=""
++-        else
++-          # If building tcl in the same src tree, private headers
++-          # are not needed, but we need to be sure to use the right
++-          # headers library
++-	  TCL_INCLUDE="-I${TCL_SRC_DIR}/generic"
++-          TCL_LIBRARY="${TCL_BUILD_LIB_SPEC}"
++-          TCL_DEPS="../tcl/${configdir}${TCL_LIB_FILE}"
++-        fi
++-
++-
++-
++ 
++ 
++@@ -14470,43 +14442,7 @@
++ 
++ 
++-
++-
++-
++-
++-        # Check for in-tree Tk
++-        intree="no"
++-        if test "${TK_SRC_DIR}" = "${topdir}/tk"; then
++-          intree="yes"
++-        fi
++-
++-        # Find Tk private headers
++-        if test x"${intree}" = xno; then
++-
++-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tk private headers" >&5
++-$as_echo_n "checking for Tk private headers... " >&6; }
++-  private_dir=""
++-  dir=`echo ${TK_INCLUDE_SPEC}/tk-private/generic | sed -e s/-I//`
++-  if test -f ${dir}/tkInt.h; then
++-    private_dir=${dir}
++-  fi
++-
++-  if test x"${private_dir}" = x; then
++-    as_fn_error "could not find Tk private headers" "$LINENO" 5
++-  else
++-    TK_PRIVATE_INCLUDE="-I${private_dir}"
++-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${private_dir}" >&5
++-$as_echo "${private_dir}" >&6; }
++-  fi
++-
++-	  TK_INCLUDE="${TK_INCLUDE_SPEC} ${TK_PRIVATE_INCLUDE}"
+++	  TK_INCLUDE="${TK_INCLUDE_SPEC}"
++ 	  TK_LIBRARY=${TK_LIB_SPEC}
++           TK_DEPS=""
++-        else
++-          TK_INCLUDE="-I${TK_SRC_DIR}/generic"
++-          TK_LIBRARY="${TK_BUILD_LIB_SPEC}"
++-          TK_DEPS="../tk/${configdir}/${TK_LIB_FILE}"
++-        fi
++-
++-
++ 
++ 
+
+Property changes on: files/extrapatch-configure-for-tcl
+___________________________________________________________________
+Added: fbsd:nokeywords
+## -0,0 +1 ##
++yes
+\ No newline at end of property
+Added: svn:eol-style
+## -0,0 +1 ##
++native
+\ No newline at end of property
+Added: svn:mime-type
+## -0,0 +1 ##
++text/plain
+\ No newline at end of property
+Index: files/extrapatch-gdbtk
+===================================================================
+--- files/extrapatch-gdbtk	(revision 0)
++++ files/extrapatch-gdbtk	(working copy)
+@@ -0,0 +1,205 @@
++Allow gdbtk to compile together with gdb-7.8.1
++
++	-mi
++
++--- gdb/gdbtk/generic/gdbtk-bp.c	2013-02-16 02:05:36.000000000 -0500
+++++ gdb/gdbtk/generic/gdbtk-bp.c	2014-11-30 17:46:27.000000000 -0500
++@@ -26,5 +26,5 @@
++ #include "breakpoint.h"
++ #include "tracepoint.h"
++-#include "gdb_string.h"
+++#include <string.h>
++ #include <tcl.h>
++ #include "gdbtk.h"
++diff -r -U2 gdb/gdbtk/generic/gdbtk-cmds.c gdb/gdbtk/generic/gdbtk-cmds.c
++--- gdb/gdbtk/generic/gdbtk-cmds.c	2013-08-15 10:26:28.000000000 -0400
+++++ gdb/gdbtk/generic/gdbtk-cmds.c	2014-11-30 18:41:09.000000000 -0500
++@@ -66,7 +66,7 @@
++ #endif
++ #include <sys/time.h>
++-#include "gdb_stat.h"
+++#include <sys/stat.h>
++ 
++-#include "gdb_string.h"
+++#include <string.h>
++ #include "dis-asm.h"
++ #include "gdbcmd.h"
++@@ -590,5 +590,5 @@
++   else
++     {
++-      if (target_ignore != (void (*) (void)) current_target.to_stop)
+++      if (current_target.to_stop != NULL)
++ 	target_stop (gdbtk_get_ptid ());
++       else
++@@ -1121,5 +1121,5 @@
++ {
++   struct symtab *st;
++-  char *filename, *fullname = NULL;
+++  const char *filename, *fullname = NULL;
++ 
++   if (objc != 2)
++@@ -1260,5 +1260,5 @@
++   info.len = len;
++   info.pathname = pathname;
++-  map_partial_symbol_filenames (do_listfiles, &info, 0);
+++  map_symbol_filenames (do_listfiles, &info, 0);
++ 
++   ALL_SYMTABS (objfile, symtab)
++@@ -1332,5 +1332,5 @@
++   Tcl_Obj *CONST * switch_objv;
++   int index, switch_objc, i, show_files = 0;
++-  domain_enum space = 0;
+++  enum search_domain space = 0;
++   char *regexp;
++   int static_only, nfiles;
++@@ -1487,5 +1487,5 @@
++ 	  else
++ 	    Tcl_ListObjAppendElement (interp, elem,
++-				      Tcl_NewStringObj (SYMBOL_PRINT_NAME (p->msymbol.minsym), -1));
+++				      Tcl_NewStringObj (MSYMBOL_PRINT_NAME (p->msymbol.minsym), -1));
++ 
++ 	  if (show_files)
++@@ -2214,5 +2214,5 @@
++ gdb_loc (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
++ {
++-  char *filename;
+++  const char *filename;
++   struct symtab_and_line sal;
++   const char *fname;
++@@ -2715,5 +2715,5 @@
++ 	      Tcl_Obj *CONST objv[])
++ {
++-  char *file, *widget;
+++  const char *file, *widget;
++   int linenumbers, ln, lnum, ltable_size;
++   FILE *fp;
++@@ -2994,5 +2994,5 @@
++       msym = lookup_minimal_symbol_by_pc (pc);
++       if (msym.minsym != NULL)
++-	funcname = GDBTK_SYMBOL_SOURCE_NAME (msym.minsym);
+++	funcname = GDBTK_MSYMBOL_SOURCE_NAME (msym.minsym);
++     }
++ 
++@@ -3116,5 +3116,5 @@
++  * Insight.
++  */
++-char *
+++const char *
++ symtab_to_filename (struct symtab *s)
++ {
++diff -r -U2 gdb/gdbtk/generic/gdbtk-cmds.h gdb/gdbtk/generic/gdbtk-cmds.h
++--- gdb/gdbtk/generic/gdbtk-cmds.h	2012-02-28 16:50:51.000000000 -0500
+++++ gdb/gdbtk/generic/gdbtk-cmds.h	2014-11-30 18:41:34.000000000 -0500
++@@ -56,5 +56,5 @@
++ 
++ /* replacement for removed gdb function */
++-char *symtab_to_filename (struct symtab *s);
+++const char *symtab_to_filename (struct symtab *s);
++ 
++ #endif /* GDBTK_CMDS_H */
++diff -r -U2 gdb/gdbtk/generic/gdbtk-hooks.c gdb/gdbtk/generic/gdbtk-hooks.c
++--- gdb/gdbtk/generic/gdbtk-hooks.c	2014-01-09 13:52:28.000000000 -0500
+++++ gdb/gdbtk/generic/gdbtk-hooks.c	2014-11-30 17:46:27.000000000 -0500
++@@ -57,5 +57,5 @@
++ #include <sys/time.h>
++ 
++-#include "gdb_string.h"
+++#include <string.h>
++ #include "dis-asm.h"
++ #include "gdbcmd.h"
++diff -r -U2 gdb/gdbtk/generic/gdbtk-interp.c gdb/gdbtk/generic/gdbtk-interp.c
++--- gdb/gdbtk/generic/gdbtk-interp.c	2013-09-05 08:55:57.000000000 -0400
+++++ gdb/gdbtk/generic/gdbtk-interp.c	2014-11-30 19:10:04.000000000 -0500
++@@ -26,5 +26,5 @@
++ #include "ui-out.h"
++ #include "cli-out.h"
++-#include "gdb_string.h"
+++#include <string.h>
++ #include "cli/cli-cmds.h"
++ #include "cli/cli-decode.h"
++@@ -71,5 +71,5 @@
++   struct gdbtk_interp_data *data;
++ 
++-  data = XZALLOC (struct gdbtk_interp_data);
+++  data = XCNEW (struct gdbtk_interp_data);
++   data->_stdout = gdbtk_fileopen ();
++   data->_stderr = gdbtk_fileopen ();
++@@ -182,12 +182,11 @@
++ {
++   static const struct interp_procs procs = {
++-    gdbtk_interpreter_init,             /* init_proc */
++-    gdbtk_interpreter_resume,           /* resume_proc */
++-    gdbtk_interpreter_suspend,	        /* suspend_proc */
++-    gdbtk_interpreter_exec,             /* exec_proc */
++-    gdbtk_interpreter_display_prompt_p, /* prompt_proc_p */
++-    gdbtk_interpreter_ui_out,		/* ui_out_proc */
++-    NULL,                               /* set_logging_proc */
++-    gdbtk_command_loop                  /* command_loop_proc */
+++    .init_proc = gdbtk_interpreter_init,
+++    .resume_proc = gdbtk_interpreter_resume,
+++    .suspend_proc = gdbtk_interpreter_suspend,
+++    .exec_proc = gdbtk_interpreter_exec,
+++    .ui_out_proc = gdbtk_interpreter_ui_out,
+++    .set_logging_proc = NULL,
+++    .command_loop_proc = gdbtk_command_loop
++   };
++   interp_add (interp_new ("insight", &procs));
++diff -r -U2 gdb/gdbtk/generic/gdbtk-main.c gdb/gdbtk/generic/gdbtk-main.c
++--- gdb/gdbtk/generic/gdbtk-main.c	2014-01-14 09:33:18.000000000 -0500
+++++ gdb/gdbtk/generic/gdbtk-main.c	2014-11-30 17:46:27.000000000 -0500
++@@ -23,5 +23,5 @@
++ #include "defs.h"
++ #include "main.h"
++-#include "gdb_string.h"
+++#include <string.h>
++ 
++ int
++diff -r -U2 gdb/gdbtk/generic/gdbtk-register.c gdb/gdbtk/generic/gdbtk-register.c
++--- gdb/gdbtk/generic/gdbtk-register.c	2013-09-20 07:49:16.000000000 -0400
+++++ gdb/gdbtk/generic/gdbtk-register.c	2014-11-30 17:46:27.000000000 -0500
++@@ -25,5 +25,5 @@
++ #include "value.h"
++ #include "target.h"
++-#include "gdb_string.h"
+++#include <string.h>
++ #include "language.h"
++ #include "valprint.h"
++diff -r -U2 gdb/gdbtk/generic/gdbtk-varobj.c gdb/gdbtk/generic/gdbtk-varobj.c
++--- gdb/gdbtk/generic/gdbtk-varobj.c	2010-04-29 17:00:52.000000000 -0400
+++++ gdb/gdbtk/generic/gdbtk-varobj.c	2014-11-30 17:46:27.000000000 -0500
++@@ -22,5 +22,5 @@
++ #include "defs.h"
++ #include "value.h"
++-#include "gdb_string.h"
+++#include <string.h>
++ #include "varobj.h"
++ #include "exceptions.h"
++diff -r -U2 gdb/gdbtk/generic/gdbtk.c gdb/gdbtk/generic/gdbtk.c
++--- gdb/gdbtk/generic/gdbtk.c	2013-09-20 07:38:18.000000000 -0400
+++++ gdb/gdbtk/generic/gdbtk.c	2014-11-30 17:46:27.000000000 -0500
++@@ -49,5 +49,5 @@
++ 
++ #include <fcntl.h>
++-#include "gdb_stat.h"
+++#include <sys/stat.h>
++ #ifdef HAVE_SYS_IOCTL_H
++ #include <sys/ioctl.h>
++@@ -56,5 +56,5 @@
++ #include <signal.h>
++ 
++-#include "gdb_string.h"
+++#include <string.h>
++ #include "dis-asm.h"
++ #include "gdbcmd.h"
++diff -r -U2 gdb/gdbtk/generic/gdbtk.h gdb/gdbtk/generic/gdbtk.h
++--- gdb/gdbtk/generic/gdbtk.h	2012-03-30 09:23:52.000000000 -0400
+++++ gdb/gdbtk/generic/gdbtk.h	2014-11-30 18:00:36.000000000 -0500
++@@ -178,4 +178,8 @@
++        ? SYMBOL_DEMANGLED_NAME (symbol)       \
++        : SYMBOL_PRINT_NAME (symbol))
+++#define GDBTK_MSYMBOL_SOURCE_NAME(symbol) \
+++      (MSYMBOL_DEMANGLED_NAME (symbol) != NULL \
+++       ? MSYMBOL_DEMANGLED_NAME (symbol)       \
+++       : MSYMBOL_PRINT_NAME (symbol))
++ 
++ 
+
+Property changes on: files/extrapatch-gdbtk
+___________________________________________________________________
+Added: svn:mime-type
+## -0,0 +1 ##
++text/plain
+\ No newline at end of property
+Added: fbsd:nokeywords
+## -0,0 +1 ##
++yes
+\ No newline at end of property
+Added: svn:eol-style
+## -0,0 +1 ##
++native
+\ No newline at end of property
+Index: files/extrapatch-libgui
+===================================================================
+--- files/extrapatch-libgui	(revision 0)
++++ files/extrapatch-libgui	(working copy)
+@@ -0,0 +1,55 @@
++1. Point initialization code to where we install it.
++
++2. Rename our own package "debug" and "combobox" to have "insight"
++   prefix to avoid conflicts with namesakes provided by tcllib.
++
++	-mi
++
++--- libgui/src/paths.c	2008-07-22 16:11:35.000000000 -0400
+++++ libgui/src/paths.c	2014-11-30 21:19:04.000000000 -0500
++@@ -114,5 +114,5 @@
++   }\n\
++   # Try to handle running from the build tree:\n\
++-  lappend idedirs [file join [file dirname [file dirname $::tcl_library]] libide library]\n\
+++  lappend idedirs [file join [file dirname [file dirname $::tcl_library]] share redhat gui]\n\
++   foreach sd $idedirs {\n\
++     if {[file exists [file join $sd tclIndex]]} {\n\
++diff -r -U2 /home/mi/gdb-src/libgui/library/combobox.tcl libgui/library/combobox.tcl
++--- libgui/library/combobox.tcl	2004-03-31 17:08:37.000000000 -0500
+++++ libgui/library/combobox.tcl	2014-11-30 21:37:40.000000000 -0500
++@@ -29,5 +29,5 @@
++ 
++ package require Tk 8.0
++-package provide combobox 2.3
+++package provide insightcombobox 2.3
++ 
++ namespace eval ::combobox {
++diff -r -U2 /home/mi/gdb-src/libgui/library/debug.tcl libgui/library/debug.tcl
++--- libgui/library/debug.tcl	2001-09-08 18:34:46.000000000 -0400
+++++ libgui/library/debug.tcl	2014-11-30 21:37:17.000000000 -0500
++@@ -15,5 +15,5 @@
++ # -----------------------------------------------------------------------------
++ 
++-package provide debug 1.0
+++package provide insightdebug 1.0
++ 
++ namespace eval ::debug {
++--- libgui/library/pkgIndex.tcl	2009-03-12 17:00:11.000000000 -0400
+++++ libgui/library/pkgIndex.tcl	2014-11-30 21:35:35.000000000 -0500
++@@ -9,4 +9,4 @@
++ # full path name of this file's directory.
++ 
++-package ifneeded combobox 2.3 [list source [file join $dir combobox.tcl]]
++-package ifneeded debug 1.0 [list source [file join $dir debug.tcl]]
+++package ifneeded insightcombobox 2.3 [list source [file join $dir combobox.tcl]]
+++package ifneeded insightdebug 1.0 [list source [file join $dir debug.tcl]]
++--- gdb/gdbtk/library/main.tcl	2008-08-02 18:08:32.000000000 -0400
+++++ gdb/gdbtk/library/main.tcl	2014-11-30 21:44:29.000000000 -0500
++@@ -57,5 +57,6 @@
++ # any odd errors... :
++ 
++-foreach p {{Tcl 8.4} {Tk 8.4} {Itcl 3.3} {Itk 3.3} {Iwidgets 4.0} {Gdbtk 1.0} {combobox 2.2} {debug 1.0}} {
+++foreach p {{Tcl 8.4} {Tk 8.4} {Itcl 3.3} {Itk 3.3} {Iwidgets 4.0} {Gdbtk 1.0}
+++	   {insightcombobox 2.2} {insightdebug 1.0}} {
++   if {[catch {package require [lindex $p 0] [lindex $p 1]} msg]} {
++     if {![info exists ::env(GDBTK_TEST_RUNNING)] || $::env(GDBTK_TEST_RUNNING) == 0} {
+
+Property changes on: files/extrapatch-libgui
+___________________________________________________________________
+Added: svn:mime-type
+## -0,0 +1 ##
++text/plain
+\ No newline at end of property
+Added: fbsd:nokeywords
+## -0,0 +1 ##
++yes
+\ No newline at end of property
+Added: svn:eol-style
+## -0,0 +1 ##
++native
+\ No newline at end of property
+Index: files/extrapatch-system-tkTable
+===================================================================
+--- files/extrapatch-system-tkTable	(revision 0)
++++ files/extrapatch-system-tkTable	(working copy)
+@@ -0,0 +1,45 @@
++Do not compile our own tkTable-package, use the already installed
++one.
++
++	-mi
++
++--- libgui/src/Makefile.in	2009-11-09 14:23:12.000000000 -0500
+++++ libgui/src/Makefile.in	2014-11-30 22:34:49.000000000 -0500
++@@ -36,5 +36,5 @@
++ build_triplet = @build@
++ host_triplet = @host@
++-DIST_COMMON = $(srcdir)/tkTable_version.in $(srcdir)/Makefile.in \
+++DIST_COMMON = $(srcdir)/Makefile.in \
++ 	$(srcdir)/Makefile.am $(am__include_HEADERS_DIST)
++ subdir = src
++@@ -52,8 +52,4 @@
++ libgui_a_AR = $(AR) $(ARFLAGS)
++ libgui_a_LIBADD =
++-am__objects_1 = tkTable.$(OBJEXT) tkTableCell.$(OBJEXT) \
++-	tkTableCellSort.$(OBJEXT) tkTableCmds.$(OBJEXT) \
++-	tkTableEdit.$(OBJEXT) tkTableTag.$(OBJEXT) \
++-	tkTableWin.$(OBJEXT) tkTableUtil.$(OBJEXT)
++ am_libgui_a_OBJECTS = subcommand.$(OBJEXT) tclwinprint.$(OBJEXT) \
++ 	tclshellexe.$(OBJEXT) paths.$(OBJEXT) tclwingrab.$(OBJEXT) \
++--- gdb/gdbtk/generic/gdbtk.c	2013-09-20 07:38:18.000000000 -0400
+++++ gdb/gdbtk/generic/gdbtk.c	2014-11-30 22:42:47.000000000 -0500
++@@ -86,6 +86,4 @@
++ char *external_editor_command = NULL;
++ 
++-extern int Tktable_Init (Tcl_Interp * interp);
++-
++ void gdbtk_init (void);
++ 
++@@ -498,10 +496,6 @@
++     error ("Tk_Init failed: %s", Tcl_GetStringResult (gdbtk_interp));
++ 
++-  if (Tktable_Init (gdbtk_interp) != TCL_OK)
++-    error ("Tktable_Init failed: %s", Tcl_GetStringResult (gdbtk_interp));
+++  if (Tcl_PkgRequire(gdbtk_interp, "Tktable", "2.10", 0) == NULL)
+++    error ("Could not load Tktable-package: %s", Tcl_GetStringResult (gdbtk_interp));
++-
++-  Tcl_StaticPackage (gdbtk_interp, "Tktable", Tktable_Init,
++-		     (Tcl_PackageInitProc *) NULL);
++-
++   /* If we are not running from the build directory,
++      initialize GDBTK_LIBRARY. See comments above. */
+
+Property changes on: files/extrapatch-system-tkTable
+___________________________________________________________________
+Added: svn:mime-type
+## -0,0 +1 ##
++text/plain
+\ No newline at end of property
+Added: fbsd:nokeywords
+## -0,0 +1 ##
++yes
+\ No newline at end of property
+Added: svn:eol-style
+## -0,0 +1 ##
++native
+\ No newline at end of property
+Index: files/itcl33-patch
+===================================================================
+--- files/itcl33-patch	(revision 373667)
++++ files/itcl33-patch	(working copy)
+@@ -13,185 +13,3 @@
+ +    eval configure $args
+      #
+      #  Create a window with the same name as this object
+---- gdb/gdbtk/library/ehandler.itb	Tue Oct 15 17:19:51 2002
+-+++ gdb/gdbtk/library/ehandler.itb	Wed May 17 00:12:55 2006
+-@@ -23,5 +23,5 @@
+- 
+-   # invoke event handlers
+--  foreach w [itcl_info objects -isa GDBEventHandler] {
+-+  foreach w [itcl::find objects -isa GDBEventHandler] {
+-     dbug I "posting event \"$handler\" to \"$w\""
+-     if {[catch {$w $handler $event}]} {
+---- gdb/gdbtk/library/managedwin.itb	Fri Aug 27 19:13:14 2004
+-+++ gdb/gdbtk/library/managedwin.itb	Wed May 17 00:13:32 2006
+-@@ -76,5 +76,5 @@
+- itcl::body ManagedWin::window_instance {ins} {
+-   set win_instance $ins
+--  foreach obj [itcl_info objects -isa ManagedWin] {
+-+  foreach obj [itcl::find objects -isa ManagedWin] {
+-     debug "$obj ManagedWin::_wname"
+-     $obj window_name ""
+-@@ -134,5 +134,5 @@
+-   
+-   # call the reconfig method for each object
+--  foreach obj [itcl_info objects -isa ManagedWin] {
+-+  foreach obj [itcl::find objects -isa ManagedWin] {
+-     if {[catch {$obj reconfig} msg]} {
+-       dbug W "reconfig failed for $obj - $msg"
+-@@ -148,5 +148,5 @@
+- itcl::body ManagedWin::shutdown {} {
+-   set activeWins {}
+--  foreach win [itcl_info objects -isa ManagedWin] {
+-+  foreach win [itcl::find objects -isa ManagedWin] {
+-     if {![$win isa ModalDialog] && ![$win _ignore_on_save]} {
+-       set g [wm geometry [winfo toplevel [namespace tail $win]]]
+-@@ -221,5 +221,5 @@
+-   if {!$force} {
+-     # check all windows for one of this type
+--    foreach obj [itcl_info objects -isa ManagedWin] {
+-+    foreach obj [itcl::find objects -isa ManagedWin] {
+-       if {[$obj isa $class]} {
+- 	$obj reveal
+-@@ -364,5 +364,5 @@
+-   debug "$win"
+-   set res ""
+--  foreach obj [itcl_info objects -isa ManagedWin] {
+-+  foreach obj [itcl::find objects -isa ManagedWin] {
+-     if {[$obj isa $win]} {
+-       lappend res $obj
+---- libgui/library/balloon.tcl	Mon Feb 10 04:21:40 2003
+-+++ libgui/library/balloon.tcl	Thu Jun 28 15:39:09 2007
+-@@ -8,34 +8,34 @@
+- # * Likewise, balloon positioning on Windows is a hack.
+- 
+--itcl_class Balloon {
+-+itcl::class Balloon {
+-   # Name of associated global variable which should be set whenever
+-   # the help is shown.
+--  public variable {}
+-+  public variable variable {}
+- 
+-   # Name of associated toplevel.  Private variable.
+--  protected _top {}
+-+  protected variable _top {}
+- 
+-   # This is non-empty if there is an after script pending.  Private
+-   # method.
+--  protected _after_id {}
+-+  protected variable _after_id {}
+- 
+-   # This is an array mapping window name to help text.
+--  protected _help_text
+-+  protected variable _help_text
+- 
+-   # This is an array mapping window name to notification proc.
+--  protected _notifiers
+-+  protected variable _notifiers
+- 
+-   # This is set to the name of the parent widget whenever the mouse is
+-   # in a widget with balloon help.
+--  protected _active {}
+-+  protected variable _active {}
+- 
+-   # This is true when we're already calling a notification proc.
+-   # Private variable.
+--  protected _in_notifier 0
+-+  protected variable _in_notifier 0
+- 
+-   # This holds the parent of the most recently entered widget.  It is
+-   # used to determine when the user is moving through a toolbar.
+-   # Private variable.
+--  protected _recent_parent {}
+-+  protected variable _recent_parent {}
+- 
+-   constructor {top} {
+---- libgui/library/cframe.tcl	Sat Sep  8 18:34:46 2001
+-+++ libgui/library/cframe.tcl	Thu Jun 28 15:39:50 2007
+-@@ -3,5 +3,5 @@
+- # Written by Tom Tromey <tromey@cygnus.com>.
+- 
+--itcl_class Checkframe {
+-+itcl::class Checkframe {
+-   inherit Widgetframe
+- 
+-@@ -14,5 +14,5 @@
+-   # trace when the variable changes (or is deleted).  Private
+-   # variable.
+--  protected _saved_variable {}
+-+  protected variable _saved_variable {}
+- 
+-   # The checkbutton variable.
+-@@ -45,5 +45,5 @@
+-   # This holds a list of all widgets which should be immune to
+-   # enabling/disabling.  Private variable.
+--  protected _avoid {}
+-+  protected variable _avoid {}
+- 
+-   constructor {config} {
+---- libgui/library/lframe.tcl	Sat Sep  8 18:34:46 2001
+-+++ libgui/library/lframe.tcl	Thu Jun 28 15:32:04 2007
+-@@ -3,5 +3,5 @@
+- # Written by Tom Tromey <tromey@cygnus.com>.
+- 
+--itcl_class Labelledframe {
+-+itcl::class Labelledframe {
+-   inherit Widgetframe
+- 
+---- libgui/library/multibox.tcl	Sat Sep  8 18:34:46 2001
+-+++ libgui/library/multibox.tcl	Thu Jun 28 15:39:58 2007
+-@@ -7,5 +7,5 @@
+- # * Should support itemcget, itemconfigure.
+- 
+--itcl_class Multibox {
+-+itcl::class Multibox {
+-   # The selection mode.
+-   public selectmode browse {
+-@@ -20,5 +20,5 @@
+-   # This is a list of all the listbox widgets we've created.  Private
+-   # variable.
+--  protected _listboxen {}
+-+  protected variable _listboxen {}
+- 
+-   # Tricky: take the class bindings for the Listbox widget and turn
+---- libgui/library/sendpr.tcl	Tue Feb  5 18:16:14 2002
+-+++ libgui/library/sendpr.tcl	Thu Jun 28 15:32:04 2007
+-@@ -14,5 +14,5 @@
+- defarray SENDPR_state
+- 
+--itcl_class Sendpr {
+-+itcl::class Sendpr {
+-   inherit Ide_window
+- 
+---- libgui/library/ventry.tcl	Sat Sep  8 18:34:46 2001
+-+++ libgui/library/ventry.tcl	Thu Jun 28 15:32:04 2007
+-@@ -3,5 +3,5 @@
+- # Written by Tom Tromey <tromey@cygnus.com>.
+- 
+--itcl_class Validated_entry {
+-+itcl::class Validated_entry {
+-   # The validation command.  It is passed the contents of the entry.
+-   # It should throw an error if there is a problem; the error text
+---- libgui/library/wframe.tcl	Sat Sep  8 18:34:46 2001
+-+++ libgui/library/wframe.tcl	Thu Jun 28 15:40:07 2007
+-@@ -3,5 +3,5 @@
+- # Written by Tom Tromey <tromey@cygnus.com>.
+- 
+--itcl_class Widgetframe {
+-+itcl::class Widgetframe {
+-   # Where to put the widget.  For now, we don't support many anchors.
+-   # Augment as you like.
+-@@ -15,5 +15,5 @@
+-   # The name of the widget to put on the frame.  This is set by some
+-   # subclass calling the _add method.  Private variable.
+--  protected _widget {}
+-+  protected variable _widget {}
+- 
+-   constructor {config} {
+---- libgui/library/pkgIndex.tcl	2003-02-04 02:33:38.000000000 -0500
+-+++ libgui/library/pkgIndex.tcl	2010-12-02 23:33:05.000000000 -0500
+-@@ -9,4 +9,4 @@
+- # full path name of this file's directory.
+- 
+--package ifneeded combobox 2.2.1 [list source [file join $dir combobox.tcl]]
+-+package ifneeded combobox 2.3 [list source [file join $dir combobox.tcl]]
+- package ifneeded debug 1.0 [list source [file join $dir debug.tcl]]
+Index: pkg-plist
+===================================================================
+--- pkg-plist	(revision 373690)
++++ pkg-plist	(working copy)
+@@ -21,3 +21,252 @@
+ %%PYTHON%%%%DATADIR%%%%VER%%/python/gdb/function/strfns.py
+ %%PYTHON%%%%DATADIR%%%%VER%%/python/gdb/printer/__init__.py
+ %%PYTHON%%%%DATADIR%%%%VER%%/python/gdb/printer/bound_registers.py
++%%INSIGHT%%bin/insight
++%%INSIGHT%%share/redhat/gui/advice.tcl
++%%INSIGHT%%share/redhat/gui/balloon.tcl
++%%INSIGHT%%share/redhat/gui/bbox.tcl
++%%INSIGHT%%share/redhat/gui/bindings.tcl
++%%INSIGHT%%share/redhat/gui/canvas.tcl
++%%INSIGHT%%share/redhat/gui/center.tcl
++%%INSIGHT%%share/redhat/gui/cframe.tcl
++%%INSIGHT%%share/redhat/gui/combobox.tcl
++%%INSIGHT%%share/redhat/gui/debug.tcl
++%%INSIGHT%%share/redhat/gui/def.tcl
++%%INSIGHT%%share/redhat/gui/font.tcl
++%%INSIGHT%%share/redhat/gui/gensym.tcl
++%%INSIGHT%%share/redhat/gui/gettext.tcl
++%%INSIGHT%%share/redhat/gui/hooks.tcl
++%%INSIGHT%%share/redhat/gui/internet.tcl
++%%INSIGHT%%share/redhat/gui/lframe.tcl
++%%INSIGHT%%share/redhat/gui/list.tcl
++%%INSIGHT%%share/redhat/gui/looknfeel.tcl
++%%INSIGHT%%share/redhat/gui/menu.tcl
++%%INSIGHT%%share/redhat/gui/mono.tcl
++%%INSIGHT%%share/redhat/gui/multibox.tcl
++%%INSIGHT%%share/redhat/gui/pane.tcl
++%%INSIGHT%%share/redhat/gui/panedwindow.tcl
++%%INSIGHT%%share/redhat/gui/parse_args.tcl
++%%INSIGHT%%share/redhat/gui/path.tcl
++%%INSIGHT%%share/redhat/gui/pkgIndex.tcl
++%%INSIGHT%%share/redhat/gui/postghost.tcl
++%%INSIGHT%%share/redhat/gui/prefs.tcl
++%%INSIGHT%%share/redhat/gui/print.tcl
++%%INSIGHT%%share/redhat/gui/sendpr.tcl
++%%INSIGHT%%share/redhat/gui/toolbar.tcl
++%%INSIGHT%%share/redhat/gui/topbind.tcl
++%%INSIGHT%%share/redhat/gui/ulset.tcl
++%%INSIGHT%%share/redhat/gui/ventry.tcl
++%%INSIGHT%%share/redhat/gui/wframe.tcl
++%%INSIGHT%%share/redhat/gui/wingrab.tcl
++%%INSIGHT%%share/redhat/gui/tclIndex
++%%INSIGHT%%lib/insight1.0/about.tcl
++%%INSIGHT%%lib/insight1.0/actiondlg.tcl
++%%INSIGHT%%lib/insight1.0/attachdlg.itb
++%%INSIGHT%%lib/insight1.0/attachdlg.ith
++%%INSIGHT%%lib/insight1.0/blockframe.itb
++%%INSIGHT%%lib/insight1.0/blockframe.ith
++%%INSIGHT%%lib/insight1.0/bpwin.itb
++%%INSIGHT%%lib/insight1.0/bpwin.ith
++%%INSIGHT%%lib/insight1.0/browserwin.itb
++%%INSIGHT%%lib/insight1.0/browserwin.ith
++%%INSIGHT%%lib/insight1.0/console.itb
++%%INSIGHT%%lib/insight1.0/console.ith
++%%INSIGHT%%lib/insight1.0/cspref.itb
++%%INSIGHT%%lib/insight1.0/cspref.ith
++%%INSIGHT%%lib/insight1.0/debugwin.itb
++%%INSIGHT%%lib/insight1.0/debugwin.ith
++%%INSIGHT%%lib/insight1.0/download.itb
++%%INSIGHT%%lib/insight1.0/download.ith
++%%INSIGHT%%lib/insight1.0/editor.tcl
++%%INSIGHT%%lib/insight1.0/ehandler.itb
++%%INSIGHT%%lib/insight1.0/ehandler.ith
++%%INSIGHT%%lib/insight1.0/embeddedwin.ith
++%%INSIGHT%%lib/insight1.0/gdbevent.itb
++%%INSIGHT%%lib/insight1.0/gdbevent.ith
++%%INSIGHT%%lib/insight1.0/gdbmenubar.itcl
++%%INSIGHT%%lib/insight1.0/gdbtoolbar.itcl
++%%INSIGHT%%lib/insight1.0/gdbwin.ith
++%%INSIGHT%%lib/insight1.0/globalpref.itb
++%%INSIGHT%%lib/insight1.0/globalpref.ith
++%%INSIGHT%%lib/insight1.0/help/breakpoint.html
++%%INSIGHT%%lib/insight1.0/help/browser.html
++%%INSIGHT%%lib/insight1.0/help/console.html
++%%INSIGHT%%lib/insight1.0/help/debug.html
++%%INSIGHT%%lib/insight1.0/help/gbl_pref.html
++%%INSIGHT%%lib/insight1.0/help/help.html
++%%INSIGHT%%lib/insight1.0/help/images/browser1.png
++%%INSIGHT%%lib/insight1.0/help/images/browser2.png
++%%INSIGHT%%lib/insight1.0/help/images/frame_info.gif
++%%INSIGHT%%lib/insight1.0/help/images/insightbwr.png
++%%INSIGHT%%lib/insight1.0/help/images/mem_menu.gif
++%%INSIGHT%%lib/insight1.0/help/images/mem_popup.gif
++%%INSIGHT%%lib/insight1.0/help/images/mem_pref.gif
++%%INSIGHT%%lib/insight1.0/help/images/reg.png
++%%INSIGHT%%lib/insight1.0/help/images/reg_menu.png
++%%INSIGHT%%lib/insight1.0/help/images/src_bal.gif
++%%INSIGHT%%lib/insight1.0/help/images/src_bp_bal.gif
++%%INSIGHT%%lib/insight1.0/help/images/src_bpop.gif
++%%INSIGHT%%lib/insight1.0/help/images/src_menu.gif
++%%INSIGHT%%lib/insight1.0/help/images/src_pop.gif
++%%INSIGHT%%lib/insight1.0/help/images/src_stat.gif
++%%INSIGHT%%lib/insight1.0/help/images/src_thread.gif
++%%INSIGHT%%lib/insight1.0/help/images/src_toolbar.gif
++%%INSIGHT%%lib/insight1.0/help/images/watch.png
++%%INSIGHT%%lib/insight1.0/help/index.html
++%%INSIGHT%%lib/insight1.0/help/license.html
++%%INSIGHT%%lib/insight1.0/help/locals.html
++%%INSIGHT%%lib/insight1.0/help/memory.html
++%%INSIGHT%%lib/insight1.0/help/register.html
++%%INSIGHT%%lib/insight1.0/help/session.html
++%%INSIGHT%%lib/insight1.0/help/source.html
++%%INSIGHT%%lib/insight1.0/help/src_pref.html
++%%INSIGHT%%lib/insight1.0/help/stack.html
++%%INSIGHT%%lib/insight1.0/help/target.html
++%%INSIGHT%%lib/insight1.0/help/thread.html
++%%INSIGHT%%lib/insight1.0/help/trace/console.html
++%%INSIGHT%%lib/insight1.0/help/trace/gbl_pref.html
++%%INSIGHT%%lib/insight1.0/help/trace/help.html
++%%INSIGHT%%lib/insight1.0/help/trace/index.toc
++%%INSIGHT%%lib/insight1.0/help/trace/license.html
++%%INSIGHT%%lib/insight1.0/help/trace/locals.html
++%%INSIGHT%%lib/insight1.0/help/trace/memory.html
++%%INSIGHT%%lib/insight1.0/help/trace/reg_pref.html
++%%INSIGHT%%lib/insight1.0/help/trace/register.html
++%%INSIGHT%%lib/insight1.0/help/trace/source.html
++%%INSIGHT%%lib/insight1.0/help/trace/src_pref.html
++%%INSIGHT%%lib/insight1.0/help/trace/stack.html
++%%INSIGHT%%lib/insight1.0/help/trace/target.html
++%%INSIGHT%%lib/insight1.0/help/trace/tdump.html
++%%INSIGHT%%lib/insight1.0/help/trace/tp.html
++%%INSIGHT%%lib/insight1.0/help/trace/tracedlg.html
++%%INSIGHT%%lib/insight1.0/help/trace/watch.html
++%%INSIGHT%%lib/insight1.0/help/watch.html
++%%INSIGHT%%lib/insight1.0/helpviewer.tcl
++%%INSIGHT%%lib/insight1.0/images/Movie_off.gif
++%%INSIGHT%%lib/insight1.0/images/Movie_on.gif
++%%INSIGHT%%lib/insight1.0/images/bottom.gif
++%%INSIGHT%%lib/insight1.0/images/bp.gif
++%%INSIGHT%%lib/insight1.0/images/check.gif
++%%INSIGHT%%lib/insight1.0/images/console.gif
++%%INSIGHT%%lib/insight1.0/images/continue.gif
++%%INSIGHT%%lib/insight1.0/images/down.gif
++%%INSIGHT%%lib/insight1.0/images/edit.gif
++%%INSIGHT%%lib/insight1.0/images/finish.gif
++%%INSIGHT%%lib/insight1.0/images/gdbtk_icon.gif
++%%INSIGHT%%lib/insight1.0/images/help.gif
++%%INSIGHT%%lib/insight1.0/images/home.gif
++%%INSIGHT%%lib/insight1.0/images/icons.txt
++%%INSIGHT%%lib/insight1.0/images/insight.gif
++%%INSIGHT%%lib/insight1.0/images/less.gif
++%%INSIGHT%%lib/insight1.0/images/memory.gif
++%%INSIGHT%%lib/insight1.0/images/more.gif
++%%INSIGHT%%lib/insight1.0/images/next.gif
++%%INSIGHT%%lib/insight1.0/images/next_check.gif
++%%INSIGHT%%lib/insight1.0/images/next_frame.gif
++%%INSIGHT%%lib/insight1.0/images/next_hit.gif
++%%INSIGHT%%lib/insight1.0/images/next_line.gif
++%%INSIGHT%%lib/insight1.0/images/nexti.gif
++%%INSIGHT%%lib/insight1.0/images/open.gif
++%%INSIGHT%%lib/insight1.0/images/prev_hit.gif
++%%INSIGHT%%lib/insight1.0/images/reg.gif
++%%INSIGHT%%lib/insight1.0/images/rewind.gif
++%%INSIGHT%%lib/insight1.0/images/run.gif
++%%INSIGHT%%lib/insight1.0/images/run_expt.gif
++%%INSIGHT%%lib/insight1.0/images/src.gif
++%%INSIGHT%%lib/insight1.0/images/stack.gif
++%%INSIGHT%%lib/insight1.0/images/step.gif
++%%INSIGHT%%lib/insight1.0/images/stepi.gif
++%%INSIGHT%%lib/insight1.0/images/stop.gif
++%%INSIGHT%%lib/insight1.0/images/tdump.gif
++%%INSIGHT%%lib/insight1.0/images/tp.gif
++%%INSIGHT%%lib/insight1.0/images/up.gif
++%%INSIGHT%%lib/insight1.0/images/vars.gif
++%%INSIGHT%%lib/insight1.0/images/watch.gif
++%%INSIGHT%%lib/insight1.0/images/watch_movie.gif
++%%INSIGHT%%lib/insight1.0/images2/Movie_off.gif
++%%INSIGHT%%lib/insight1.0/images2/Movie_on.gif
++%%INSIGHT%%lib/insight1.0/images2/bottom.gif
++%%INSIGHT%%lib/insight1.0/images2/bp.gif
++%%INSIGHT%%lib/insight1.0/images2/check.gif
++%%INSIGHT%%lib/insight1.0/images2/console.gif
++%%INSIGHT%%lib/insight1.0/images2/continue.gif
++%%INSIGHT%%lib/insight1.0/images2/down.gif
++%%INSIGHT%%lib/insight1.0/images2/edit.gif
++%%INSIGHT%%lib/insight1.0/images2/finish.gif
++%%INSIGHT%%lib/insight1.0/images2/function.gif
++%%INSIGHT%%lib/insight1.0/images2/gdbtk_icon.gif
++%%INSIGHT%%lib/insight1.0/images2/help.gif
++%%INSIGHT%%lib/insight1.0/images2/home.gif
++%%INSIGHT%%lib/insight1.0/images2/icons.txt
++%%INSIGHT%%lib/insight1.0/images2/insight.gif
++%%INSIGHT%%lib/insight1.0/images2/less.gif
++%%INSIGHT%%lib/insight1.0/images2/memory.gif
++%%INSIGHT%%lib/insight1.0/images2/more.gif
++%%INSIGHT%%lib/insight1.0/images2/next.gif
++%%INSIGHT%%lib/insight1.0/images2/next_check.gif
++%%INSIGHT%%lib/insight1.0/images2/next_frame.gif
++%%INSIGHT%%lib/insight1.0/images2/next_hit.gif
++%%INSIGHT%%lib/insight1.0/images2/next_line.gif
++%%INSIGHT%%lib/insight1.0/images2/nexti.gif
++%%INSIGHT%%lib/insight1.0/images2/open.gif
++%%INSIGHT%%lib/insight1.0/images2/prev_hit.gif
++%%INSIGHT%%lib/insight1.0/images2/reg.gif
++%%INSIGHT%%lib/insight1.0/images2/rewind.gif
++%%INSIGHT%%lib/insight1.0/images2/run.gif
++%%INSIGHT%%lib/insight1.0/images2/run_expt.gif
++%%INSIGHT%%lib/insight1.0/images2/src.gif
++%%INSIGHT%%lib/insight1.0/images2/stack.gif
++%%INSIGHT%%lib/insight1.0/images2/step.gif
++%%INSIGHT%%lib/insight1.0/images2/stepi.gif
++%%INSIGHT%%lib/insight1.0/images2/stop.gif
++%%INSIGHT%%lib/insight1.0/images2/target.gif
++%%INSIGHT%%lib/insight1.0/images2/tdump.gif
++%%INSIGHT%%lib/insight1.0/images2/tp.gif
++%%INSIGHT%%lib/insight1.0/images2/up.gif
++%%INSIGHT%%lib/insight1.0/images2/vars.gif
++%%INSIGHT%%lib/insight1.0/images2/watch.gif
++%%INSIGHT%%lib/insight1.0/images2/watch_movie.gif
++%%INSIGHT%%lib/insight1.0/interface.tcl
++%%INSIGHT%%lib/insight1.0/ipc.tcl
++%%INSIGHT%%lib/insight1.0/ipcpref.itb
++%%INSIGHT%%lib/insight1.0/ipcpref.ith
++%%INSIGHT%%lib/insight1.0/kod.itb
++%%INSIGHT%%lib/insight1.0/kod.ith
++%%INSIGHT%%lib/insight1.0/locals.tcl
++%%INSIGHT%%lib/insight1.0/main.tcl
++%%INSIGHT%%lib/insight1.0/managedwin.itb
++%%INSIGHT%%lib/insight1.0/managedwin.ith
++%%INSIGHT%%lib/insight1.0/mempref.itb
++%%INSIGHT%%lib/insight1.0/mempref.ith
++%%INSIGHT%%lib/insight1.0/memwin.itb
++%%INSIGHT%%lib/insight1.0/memwin.ith
++%%INSIGHT%%lib/insight1.0/modal.tcl
++%%INSIGHT%%lib/insight1.0/pluginwin.itcl
++%%INSIGHT%%lib/insight1.0/prefs.tcl
++%%INSIGHT%%lib/insight1.0/process.itb
++%%INSIGHT%%lib/insight1.0/process.ith
++%%INSIGHT%%lib/insight1.0/regwin.itb
++%%INSIGHT%%lib/insight1.0/regwin.ith
++%%INSIGHT%%lib/insight1.0/session.tcl
++%%INSIGHT%%lib/insight1.0/srcbar.itcl
++%%INSIGHT%%lib/insight1.0/srcpref.itb
++%%INSIGHT%%lib/insight1.0/srcpref.ith
++%%INSIGHT%%lib/insight1.0/srctextwin.itb
++%%INSIGHT%%lib/insight1.0/srctextwin.ith
++%%INSIGHT%%lib/insight1.0/srcwin.itb
++%%INSIGHT%%lib/insight1.0/srcwin.ith
++%%INSIGHT%%lib/insight1.0/stackwin.itb
++%%INSIGHT%%lib/insight1.0/stackwin.ith
++%%INSIGHT%%lib/insight1.0/targetselection.itb
++%%INSIGHT%%lib/insight1.0/targetselection.ith
++%%INSIGHT%%lib/insight1.0/tdump.tcl
++%%INSIGHT%%lib/insight1.0/tfind_args.tcl
++%%INSIGHT%%lib/insight1.0/toplevelwin.ith
++%%INSIGHT%%lib/insight1.0/tracedlg.tcl
++%%INSIGHT%%lib/insight1.0/tty.tcl
++%%INSIGHT%%lib/insight1.0/util.tcl
++%%INSIGHT%%lib/insight1.0/vartree.itb
++%%INSIGHT%%lib/insight1.0/vartree.ith
++%%INSIGHT%%lib/insight1.0/warning.tcl
++%%INSIGHT%%lib/insight1.0/watch.tcl
++%%INSIGHT%%lib/insight1.0/tclIndex

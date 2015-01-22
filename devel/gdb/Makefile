@@ -4,7 +4,9 @@
 PORTNAME=	gdb
 PORTVERSION=	7.8.1
 CATEGORIES=	devel
-MASTER_SITES=	GNU
+MASTER_SITES=	GNU:gdb http://aldan.algebra.com/~mi/:gdbtk
+DISTFILES=	${PORTNAME}-${PORTVERSION}${EXTRACT_SUFX}:gdb
+EXTRACT_ONLY=	${PORTNAME}-${PORTVERSION}${EXTRACT_SUFX}
 
 MAINTAINER=	luca.pizzamiglio@gmail.com
 COMMENT=	GNU GDB of newer version than comes with the system
@@ -31,7 +33,7 @@ PLIST_SUB=	VER=${VER}
 
 ONLY_FOR_ARCHS=	i386 amd64 powerpc powerpc64	# untested elsewhere, might work
 
-OPTIONS_DEFINE=	DEBUG EXPAT GDB_LINK PYTHON THREADS TUI
+OPTIONS_DEFINE=	DEBUG EXPAT GDB_LINK INSIGHT PYTHON THREADS TUI
 
 OPTIONS_DEFAULT=	GDB_LINK THREADS TUI PORT_READLINE
 
@@ -39,6 +41,7 @@ OPTIONS_SINGLE=	READLINE
 OPTIONS_SINGLE_READLINE=	BASE_READLINE BUNDLED_READLINE PORT_READLINE
 
 GDB_LINK_DESC=		Create the gdb link
+INSIGHT_DESC=		Tcl/Tk GUI (experimental!)
 BASE_READLINE_DESC=	from base system(EXPERIMENTAL)
 BUNDLED_READLINE_DESC=	from gdb distfile
 PORT_READLINE_DESC=	from devel/readline port
@@ -53,6 +56,23 @@ DEBUG_CFLAGS=		-g
 EXPAT_CONFIGURE_ON=	--with-expat=yes
 EXPAT_CONFIGURE_OFF=	--without-expat
 EXPAT_LIB_DEPENDS=	libexpat.so:${PORTSDIR}/textproc/expat2
+INSIGHT_USES=	tk
+INSIGHT_CONFIGURE_ENABLE=	gdbtk
+INSIGHT_CONFIGURE_ON=	--with-tclconfig=${TCL_LIBDIR} \
+			--with-tclinclude=${TCL_INCLUDEDIR}/generic \
+			--with-tkconfig=${TK_LIBDIR} \
+			--with-tkinclude=${TK_INCLUDEDIR}/generic \
+			--with-itclconfig=${LOCALBASE}/lib/itcl3.4 \
+			--with-itkconfig=${LOCALBASE}/lib/itk3.3
+INSIGHT_DISTFILES=	gdbtk-20140114.tar.xz:gdbtk
+INSIGHT_EXTRA_PATCHES=	${FILESDIR}/itcl33-patch \
+			${FILESDIR}/extrapatch-configure-for-tcl \
+			${FILESDIR}/extrapatch-gdbtk \
+			${FILESDIR}/extrapatch-libgui \
+			${FILESDIR}/extrapatch-system-tkTable
+INSIGHT_LIB_DEPENDS=	libitk.so:${PORTSDIR}/x11-toolkits/itk
+INSIGHT_RUN_DEPENDS=	${LOCALBASE}/lib/iwidgets:${PORTSDIR}/x11-toolkits/iwidgets	\
+			${LOCALBASE}/lib/Tktable2.10/pkgIndex.tcl:${PORTSDIR}/x11-toolkits/tktable
 PYTHON_CONFIGURE_ON=	--with-python=${PYTHON_CMD}
 PYTHON_CONFIGURE_OFF=	--without-python
 PYTHON_USES=		python:2
@@ -61,6 +81,15 @@ PORT_READLINE_USES=	readline:port
 TUI_CONFIGURE_ENABLE=	tui
 
 .include <bsd.port.options.mk>
+
+.if ${PORT_OPTIONS:MINSIGHT}
+PKGNAMESUFFIX=	-insight
+CONFLICTS+=	gdb*
+post-extract:
+	${TAR} -C ${WRKSRC} --exclude tkTable\* -xpf ${DISTDIR}/${_DISTFILES:Mgdbtk*}
+.else
+CONFLICTS+=	gdb-insight*
+.endif
 
 .if ! ${PORT_OPTIONS:MBUNDLED_READLINE}
 EXCLUDE+=	readline
@@ -91,6 +120,22 @@ do-install:
 
 .if ${PORT_OPTIONS:MTUI}
 	${LN} -sf gdb${VER} ${STAGEDIR}${PREFIX}/bin/gdbtui${VER}
+.endif
+.if ${PORT_OPTIONS:MINSIGHT}
+	${LN} -sf gdb${VER} ${STAGEDIR}${PREFIX}/bin/insight
+	@${MKDIR} ${STAGEDIR}${PREFIX}/share/redhat/gui
+	${CP} -p ${WRKSRC}/libgui/library/*.tcl	\
+		${WRKSRC}/libgui/library/tclIndex \
+			${STAGEDIR}${PREFIX}/share/redhat/gui/
+	@${MKDIR} ${STAGEDIR}${PREFIX}/lib/insight1.0
+	${CP} -Rp ${WRKSRC}/gdb/gdbtk/library/*.tcl	\
+		${WRKSRC}/gdb/gdbtk/library/*.itcl	\
+		${WRKSRC}/gdb/gdbtk/library/*.ith	\
+		${WRKSRC}/gdb/gdbtk/library/*.itb	\
+		${WRKSRC}/gdb/gdbtk/library/help	\
+		${WRKSRC}/gdb/gdbtk/library/images*	\
+		${WRKSRC}/gdb/gdbtk/library/tclIndex	\
+			${STAGEDIR}${PREFIX}/lib/insight1.0
 .endif
 
 .if ${PORT_OPTIONS:MGDB_LINK}
