@@ -2,11 +2,10 @@
 # $FreeBSD$
 
 PORTNAME=	gnu-efi
-MAINVERSION=	3.0
-PORTVERSION=	${MAINVERSION}w
+PORTVERSION=	3.0.1
 CATEGORIES=	sysutils
 MASTER_SITES=	SF/${PORTNAME}/
-DISTNAME=	${PORTNAME}_${PORTVERSION}.orig
+#DISTNAME=	${PORTNAME}_${PORTVERSION}.orig
 
 MAINTAINER=	luca.pizzamiglio@gmail.com
 COMMENT=	The gnu-efi library, useful for several efi tools
@@ -14,9 +13,9 @@ COMMENT=	The gnu-efi library, useful for several efi tools
 LICENSE=	BSD
 
 MAKE_JOBS_UNSAFE=	yes
-USES+=	gmake
+USES+=	gmake tar:bz2
 USE_GCC=	4.8+
-WRKSRC=	${WRKDIR}/${PORTNAME}-${MAINVERSION}
+MAKE_ARGS+=	CC=${CC}
 
 BUILD_DEPENDS+=	${LOCALBASE}/bin/objdump:${PORTSDIR}/devel/binutils
 
@@ -33,8 +32,6 @@ PLIST_SUB=	GNUARCH="ia32"
 .endif
 
 post-patch:
-	@${REINPLACE_CMD} -e "s|gcc|gcc48|" \
-		${WRKSRC}/Make.defaults
 	@${REINPLACE_CMD} -e "s|apps||" \
 		${WRKSRC}/Makefile
 	@${REINPLACE_CMD} -e "s|GNUEFISTAGEDIR|${STAGEDIR}|" \
