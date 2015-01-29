@@ -3,7 +3,7 @@
 
 PORTNAME=	gnu-efi
 PORTVERSION=	3.0.1
-CATEGORIES=	sysutils
+CATEGORIES=	devel
 MASTER_SITES=	SF/${PORTNAME}/
 
 MAINTAINER=	luca.pizzamiglio@gmail.com
