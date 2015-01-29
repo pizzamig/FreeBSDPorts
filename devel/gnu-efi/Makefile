@@ -7,23 +7,20 @@ CATEGORIES=	devel
 MASTER_SITES=	SF/${PORTNAME}/
 
 MAINTAINER=	luca.pizzamiglio@gmail.com
-COMMENT=	The gnu-efi library, useful for several efi tools
+COMMENT=	Library gnu-efi, useful for several efi tools
 
 LICENSE=	BSD
 
-MAKE_JOBS_UNSAFE=	yes
 USES+=	gmake tar:bz2
 USE_GCC=	4.8+
-MAKE_ARGS+=	CC=${CC}
-MAKE_ARGS+=	INSTALLPREFIX=${STAGEDIR}
-MAKE_ARGS+=	PREFIX=${STAGEDIR}/${PREFIX}
+MAKE_ARGS+=	CC=${CC} INSTALLPREFIX=${STAGEDIR} PREFIX=${STAGEDIR}/${PREFIX}
+
 BUILD_DEPENDS+=	${LOCALBASE}/bin/objdump:${PORTSDIR}/devel/binutils
 
 ONLY_FOR_ARCHS=	i386 amd64
 
 .include <bsd.port.options.mk>
 
-LDFLAGS=	
 .if ${ARCH} == "amd64"
 PLIST_SUB=	GNUARCH="x86_64"
 .endif
