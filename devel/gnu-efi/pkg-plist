@@ -37,10 +37,11 @@ include/efi/protocol/legacyboot.h
 include/efi/protocol/piflash64.h
 include/efi/protocol/vgaclass.h
 include/efi/romload.h
-include/efi/%%GNUARCH%%/efibind.h
-include/efi/%%GNUARCH%%/efilibplat.h
-include/efi/%%GNUARCH%%/pe.h
-lib/crt0-efi-%%GNUARCH%%.o
-lib/elf_%%GNUARCH%%_fbsd_efi.lds
+include/efi/x86_64/efibind.h
+include/efi/x86_64/efilibplat.h
+include/efi/x86_64/pe.h
+lib/crt0-efi-x86_64.o
+lib/elf_x86_64_fbsd_efi.lds
 lib/libefi.a
 lib/libgnuefi.a
+@dir include/efi/protocol/x86_64

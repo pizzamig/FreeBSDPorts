@@ -1,40 +1,28 @@
-# Created by: Luca Pizzamiglio <luca.pizzamiglio@gmail.com>
-# $FreeBSD$
+# Created by: Edward Tomasz Napierala <trasz@FreeBSD.org>
+# $FreeBSD: head/devel/gnu-efi/Makefile 377600 2015-01-21 13:20:22Z trasz $
 
 PORTNAME=	gnu-efi
-PORTVERSION=	3.0.1
+PORTVERSION=	3.0w
 CATEGORIES=	devel
-MASTER_SITES=	SF/${PORTNAME}/
+MASTER_SITES=	${MASTER_SITE_SOURCEFORGE}
+MASTER_SITE_SUBDIR=	gnu-efi
+DISTNAME=	${PORTNAME}_${PORTVERSION}.orig
 
-MAINTAINER=	luca.pizzamiglio@gmail.com
-COMMENT=	Library gnu-efi, useful for several efi tools
+MAINTAINER=	trasz@FreeBSD.org
+COMMENT=	SDK for EFI applications
 
-LICENSE=	BSD
+LICENSE=	GPLv2
 
-USES+=	gmake tar:bz2
-USE_GCC=	4.8+
-MAKE_ARGS+=	CC=${CC} INSTALLPREFIX=${STAGEDIR} PREFIX=${STAGEDIR}/${PREFIX}
+WRKSRC=		${WRKDIR}/${PORTNAME}-3.0
 
-BUILD_DEPENDS+=	${LOCALBASE}/bin/objdump:${PORTSDIR}/devel/binutils
-
-ONLY_FOR_ARCHS=	i386 amd64
-
-.include <bsd.port.options.mk>
-
-.if ${ARCH} == "amd64"
-PLIST_SUB=	GNUARCH="x86_64"
-.endif
-
-.if ${ARCH} == "i386"
-PLIST_SUB=	GNUARCH="ia32"
-.endif
+USES=		gmake
+# The version of GCC is also hard-coded in files/patch-Make.defaults.
+USE_GCC=	4.8
+MAKE_JOBS_UNSAFE=	yes
+CFLAGS+=	"-fPIC"
+ONLY_FOR_ARCHS=	amd64
 
 post-patch:
-	@${REINPLACE_CMD} -e 's|$$$$(dir $$$$@)|$$$$(@D)|' \
-		${WRKSRC}/gnuefi/Makefile
-	@${REINPLACE_CMD} -e 's|$$$$(dir $$$$@)|$$$$(@D)|' \
-		${WRKSRC}/inc/Makefile
-	@${REINPLACE_CMD} -e "s|apps||" \
-		${WRKSRC}/Makefile
+	@${REINPLACE_CMD} -e 's|%%CC%%|${CC}|g' ${WRKSRC}/Make.defaults
 
 .include <bsd.port.mk>
