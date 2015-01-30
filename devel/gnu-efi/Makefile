@@ -2,20 +2,17 @@
 # $FreeBSD: head/devel/gnu-efi/Makefile 377600 2015-01-21 13:20:22Z trasz $
 
 PORTNAME=	gnu-efi
-PORTVERSION=	3.0w
+PORTVERSION=	3.0.1
 CATEGORIES=	devel
 MASTER_SITES=	${MASTER_SITE_SOURCEFORGE}
 MASTER_SITE_SUBDIR=	gnu-efi
-DISTNAME=	${PORTNAME}_${PORTVERSION}.orig
 
 MAINTAINER=	trasz@FreeBSD.org
 COMMENT=	SDK for EFI applications
 
 LICENSE=	GPLv2
 
-WRKSRC=		${WRKDIR}/${PORTNAME}-3.0
-
-USES=		gmake
+USES=		gmake tar:bz2
 # The version of GCC is also hard-coded in files/patch-Make.defaults.
 USE_GCC=	4.8
 MAKE_JOBS_UNSAFE=	yes
