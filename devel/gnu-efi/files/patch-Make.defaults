@@ -21,15 +21,6 @@
  AS           := $(prefix)$(CROSS_COMPILE)as
  LD           := $(prefix)$(CROSS_COMPILE)ld
  AR           := $(prefix)$(CROSS_COMPILE)ar
-@@ -103,7 +106,7 @@
-                                  && [ $(GCCMINOR) -ge "7" ] ) ) \
-                           && echo 1)
-   ifeq ($(GCCNEWENOUGH),1)
--    CPPFLAGS += -DGNU_EFI_USE_MS_ABI -maccumulate-outgoing-args --std=c11
-+    CPPFLAGS += -fPIC -DGNU_EFI_USE_MS_ABI -maccumulate-outgoing-args --std=c11
-   endif
- 
-   CFLAGS += -mno-red-zone -mno-mmx -mno-sse
 @@ -135,7 +138,7 @@
             -I$(TOPDIR)/inc/protocol
  
