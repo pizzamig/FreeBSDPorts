@@ -1,26 +1,5 @@
 --- Make.defaults.orig	2015-01-05 19:20:43.000000000 +0100
 +++ Make.defaults	2015-01-30 17:49:25.140109096 +0100
-@@ -45,14 +45,17 @@
- # Where to install the package. GNU-EFI will create and access
- # lib and include under the root
- #
--INSTALLROOT  := /
-+INSTALLROOT  := $(DESTDIR)
- PREFIX       := /usr/local
- LIBDIR 	     := $(PREFIX)/lib
- INSTALL	     := install
- 
-+LOCALBASE    := /usr/local
-+CROSS_COMPILE:= $(LOCALBASE)/bin/
-+
- # Compilation tools
--HOSTCC       := $(prefix)gcc
--CC           := $(prefix)$(CROSS_COMPILE)gcc
-+HOSTCC       := $(prefix)%%CC%%
-+CC           := $(prefix)$(CROSS_COMPILE)%%CC%%
- AS           := $(prefix)$(CROSS_COMPILE)as
- LD           := $(prefix)$(CROSS_COMPILE)ld
- AR           := $(prefix)$(CROSS_COMPILE)ar
 @@ -135,7 +138,7 @@
             -I$(TOPDIR)/inc/protocol
  
