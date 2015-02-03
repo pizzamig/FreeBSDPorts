@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
 
 CAT="AUDIO BENCHMARKS DEVEL MATH TEXTPROC"
-AUDIO="ctronome" # ksmp3play # timidity++ timidity++-emacs timidity++-motif timidity++-slang timidity++-tcltk timidity++-xaw timidity++-xskin
-BENCHMARKS="unixbench" # nbench unixbench sysbench libmicro
-DATABASES="" # akonadi-googledata
-DEVEL="gdb" # cross-gdb bcpp
-GAMES="" # xlife doom conquest
+AUDIO="ctronome" # 
+BENCHMARKS="nbench unixbench" # sysbench libmicro
+DESKUTILS="" # ganttproject
+DEVEL="gdb gnu-efi" # cross-gdb bcpp
 MATH="ndiff"
-MULTIMEDIA="" # oggvideotools
-SYSUTILS=""  # kdirstat backupme
+SYSUTILS="" # kdirstat 
 TEXTPROC="kdiff3"
 
 SVNURL="https://svn0.eu.FreeBSD.org/ports/head"
@@ -71,6 +69,14 @@ list()
   done
 }
 
+clist()
+{
+  echo "Category/ports:"
+  for p in ${PORTS}; do
+    echo "$(_getCat $p)/$p"
+  done
+}
+
 _svn_up()
 {
   local SVNDIR=${1:-$SVNBSDDIR}
@@ -128,7 +134,7 @@ _make_patch()
   $( cd ${SVNBSDDIR}/${_CATEGORY}/${_PORT}; svn diff > ../../../${_PORT}.diff )
 }
 
-args=$(getopt hlcsRi:I:p: $*)
+args=$(getopt hlcsRi:I:p:S: $*)
 
 if [ $? -ne 0 ]; then
   usage
@@ -143,16 +149,20 @@ while true; do
     exit 0;
     ;;
   -l)
-    list
+    clist
     shift
     ;;
   -i) # install to FreeBSD svn
     _git2svn $2 ${SVNBSDDIR}
-    shift; shift;
+    shift 2
     ;;
   -I) # install to Redports svn
     _git2svn $2 ${SVNREDPORT}
-    shift; shift;
+    shift 2
+    ;;
+  -S) # install to the local FreeBSD port
+    _git2svn $2 /usr/ports
+    shift 2
     ;;
   -s)
     _svn_up ${SVNBSDDIR} ${SVNURL}
