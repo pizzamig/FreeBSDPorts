@@ -15,7 +15,7 @@ COMMENT=	Shell scripts static analyzer
 LICENSE=	AGPLv3
 
 USE_CABAL=	cabal-install json>=0.7 regex-posix>=0.95.2 \
-		regex-compat>=0.95.1 tf-random>=0.5 QuickCheck>=2.7.6
+		regex-compat>=0.95.1 tf-random>=0.5 QuickCheck>=2.6
 
 EXECUTABLE=	${PORTNAME}
 
