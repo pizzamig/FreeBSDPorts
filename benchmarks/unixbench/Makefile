@@ -39,10 +39,6 @@ do-install:
 		${INSTALL_PROGRAM} $${f} ${STAGEDIR}${PREFIX}/lib/unixbench/pgms/ ;; \
 		esac ; \
 	done
-	${MKDIR} ${STAGEDIR}${PREFIX}/lib/unixbench/results
-#	for f in ${WRKSRC}/results/* ; do \
-#		${INSTALL_DATA} $${f} ${STAGEDIR}${PREFIX}/lib/unixbench/results/ ; \
-#	done
 	-${MKDIR} ${STAGEDIR}${PREFIX}/lib/unixbench/testdir
 	for f in ${WRKSRC}/testdir/* ; do \
 		${INSTALL_DATA} $${f} ${STAGEDIR}${PREFIX}/lib/unixbench/testdir/ ; \
