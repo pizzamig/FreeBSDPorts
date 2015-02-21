@@ -1,8 +1,9 @@
 # Created by: Steven Kreuzer <skreuzer@FreeBSD.org>
-# $FreeBSD: head/devel/gdb/Makefile 377758 2015-01-23 19:19:24Z tijl $
+# $FreeBSD: head/devel/gdb/Makefile 379311 2015-02-18 19:24:15Z jhb $
 
 PORTNAME=	gdb
 PORTVERSION=	7.8.2
+PORTREVISION=	1
 CATEGORIES=	devel
 MASTER_SITES=	GNU
 
@@ -54,6 +55,7 @@ EXPAT_CONFIGURE_ON=	--with-expat=yes
 EXPAT_CONFIGURE_OFF=	--without-expat
 EXPAT_LIB_DEPENDS=	libexpat.so:${PORTSDIR}/textproc/expat2
 GUILE_CONFIGURE_ON=	--with-guile
+GUILE_USES=		pkgconfig
 GUILE_LIB_DEPENDS=	libguile-2.0.so:${PORTSDIR}/lang/guile2
 PYTHON_CONFIGURE_ON=	--with-python=${PYTHON_CMD}
 PYTHON_CONFIGURE_OFF=	--without-python
@@ -68,11 +70,6 @@ TUI_CONFIGURE_ENABLE=	tui
 EXCLUDE+=	readline
 .endif
 
-.if ${PORT_OPTIONS:MTHREADS}
-EXTRA_PATCHES+=	${FILESDIR}/extrapatch-gdb-configure.tgt \
-		${FILESDIR}/extrapatch-gdb-Makefile.in
-.endif
-
 .if ${ARCH} == "amd64"
 CONFIGURE_TARGET=	x86_64-portbld-freebsd${OSREL}
 .endif
@@ -80,9 +77,9 @@ CONFIGURE_TARGET=	x86_64-portbld-freebsd${OSREL}
 post-patch:
 	@${REINPLACE_CMD} -e 's|$$| [GDB v${PORTVERSION} for FreeBSD]|' \
 		${WRKSRC}/gdb/version.in
-
 .if ${PORT_OPTIONS:MTHREADS}
 	@${CP} ${FILESDIR}/fbsd-threads.c ${WRKSRC}/gdb/
+	@${PATCH} ${PATCH_ARGS} < ${FILESDIR}/extrapatch-threads
 .endif
 
 do-install:
