@@ -224,13 +224,13 @@ index 582ae50..8e07369 100644
 --- gdb/amd64fbsd-tdep.c
 +++ gdb/amd64fbsd-tdep.c
 @@ -31,7 +31,6 @@
- #include <string.h>
+ #include "i386-xstate.h"
  
  #include "amd64-tdep.h"
 -#include "bsd-uthread.h"
+ #include "fbsd-tdep.h"
  #include "solib-svr4.h"
  
- /* Supported register note sections.  */
 @@ -178,46 +177,6 @@ amd64fbsd_core_read_description (struct gdbarch *gdbarch,
  }
  
@@ -297,8 +297,8 @@ index 01311b2..0929a25 100644
  i[34567]86-*-freebsd* | i[34567]86-*-kfreebsd*-gnu)
  	# Target: FreeBSD/i386
  	gdb_target_obs="i386-tdep.o i387-tdep.o i386bsd-tdep.o i386fbsd-tdep.o \
--			bsd-uthread.o solib-svr4.o"
-+			fbsd-threads.o solib-svr4.o"
+-			bsd-uthread.o fbsd-tdep.o solib-svr4.o"
++			fbsd-threads.o fbsd-tdep.o solib-svr4.o"
  	;;
  i[34567]86-*-netbsd* | i[34567]86-*-knetbsd*-gnu)
  	# Target: NetBSD/i386
@@ -306,8 +306,8 @@ index 01311b2..0929a25 100644
  powerpc*-*-freebsd*)
  	# Target: FreeBSD/powerpc
  	gdb_target_obs="rs6000-tdep.o ppc-sysv-tdep.o ppc64-tdep.o \
--		        ppcfbsd-tdep.o solib-svr4.o \
-+		        ppcfbsd-tdep.o solib-svr4.o fbsd-threads.o \
+-		        ppcfbsd-tdep.o fbsd-tdep.o solib-svr4.o \
++		        ppcfbsd-tdep.o fbsd-tdep.o solib-svr4.o fbsd-threads.o \
  			ravenscar-thread.o ppc-ravenscar-thread.o"
  	;;
  
@@ -315,8 +315,8 @@ index 01311b2..0929a25 100644
  	# Target: FreeBSD/amd64
  	gdb_target_obs="amd64-tdep.o amd64fbsd-tdep.o i386-tdep.o \
  			i387-tdep.o i386bsd-tdep.o i386fbsd-tdep.o \
--			bsd-uthread.o solib-svr4.o"
-+			fbsd-threads.o solib-svr4.o"
+-			bsd-uthread.o fbsd-tdep.o solib-svr4.o"
++			fbsd-threads.o fbsd-tdep.o solib-svr4.o"
  	;;
  x86_64-*-mingw* | x86_64-*-cygwin*)
          # Target: MingW/amd64
@@ -575,9 +575,9 @@ index 8f7109f..fcb85d8 100644
  #include "i386-tdep.h"
  #include "i387-tdep.h"
 -#include "bsd-uthread.h"
+ #include "fbsd-tdep.h"
  #include "solib-svr4.h"
  
- /* FreeBSD 3.0-RELEASE or later.  */
 @@ -153,46 +152,6 @@ i386fbsd_core_read_description (struct gdbarch *gdbarch,
  }
  

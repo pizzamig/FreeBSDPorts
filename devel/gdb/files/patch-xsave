@@ -110,8 +110,8 @@ index 08de9a1..eea2472 100644
 @@ -36,6 +36,7 @@
  #include "amd64-nat.h"
  #include "amd64bsd-nat.h"
- #include "i386-nat.h"
-+#include "i386-xstate.h"
+ #include "x86-nat.h"
++#include "x86-xstate.h"
  
  
  /* Offset in `struct reg' where MEMBER is stored.  */
@@ -149,20 +149,20 @@ index 08de9a1..eea2472 100644
 +
 +  if (x86_xsave_len != 0)
 +    {
-+      switch (xcr0 & I386_XSTATE_ALL_MASK)
++      switch (xcr0 & X86_XSTATE_ALL_MASK)
 +	{
-+	case I386_XSTATE_MPX_AVX512_MASK:
-+	case I386_XSTATE_AVX512_MASK:
++	case X86_XSTATE_MPX_AVX512_MASK:
++	case X86_XSTATE_AVX512_MASK:
 +	  if (is64)
 +	    return tdesc_amd64_avx512;
 +	  else
 +	    return tdesc_i386_avx512;
-+	case I386_XSTATE_MPX_MASK:
++	case X86_XSTATE_MPX_MASK:
 +	  if (is64)
 +	    return tdesc_amd64_mpx;
 +	  else
 +	    return tdesc_i386_mpx;
-+	case I386_XSTATE_AVX_MASK:
++	case X86_XSTATE_AVX_MASK:
 +	  if (is64)
 +	    return tdesc_amd64_avx;
 +	  else
@@ -202,7 +202,7 @@ index 884fbc4..582ae50 100644
  #include "osabi.h"
 +#include "regset.h"
 +#include "i386fbsd-tdep.h"
-+#include "i386-xstate.h"
++#include "x86-xstate.h"
  
  #include "gdb_assert.h"
  #include <string.h>
@@ -215,7 +215,7 @@ index 884fbc4..582ae50 100644
 +{
 +  { ".reg", 22 * 8, "general-purpose" },
 +  { ".reg2", 512, "floating-point" },
-+  { ".reg-xstate", I386_XSTATE_MAX_SIZE, "XSAVE extended state" },
++  { ".reg-xstate", X86_XSTATE_MAX_SIZE, "XSAVE extended state" },
 +  { NULL, 0 }
 +};
 +
@@ -233,14 +233,14 @@ index 884fbc4..582ae50 100644
 +{
 +  uint64_t xcr0 = i386fbsd_core_read_xcr0 (abfd);
 +
-+  switch (xcr0 & I386_XSTATE_ALL_MASK)
++  switch (xcr0 & X86_XSTATE_ALL_MASK)
 +    {
-+    case I386_XSTATE_MPX_AVX512_MASK:
-+    case I386_XSTATE_AVX512_MASK:
++    case X86_XSTATE_MPX_AVX512_MASK:
++    case X86_XSTATE_AVX512_MASK:
 +      return tdesc_amd64_avx512;
-+    case I386_XSTATE_MPX_MASK:
++    case X86_XSTATE_MPX_MASK:
 +      return tdesc_amd64_mpx;
-+    case I386_XSTATE_AVX_MASK:
++    case X386_XSTATE_AVX_MASK:
 +      return tdesc_amd64_avx;
 +    default:
 +      return tdesc_amd64;
@@ -394,7 +394,7 @@ index fb80991..b9620e1 100644
  #include "i386-tdep.h"
  #include "i386-nat.h"
  #include "i386bsd-nat.h"
-+#include "i386-xstate.h"
++#include "x86-xstate.h"
  
  /* Resume execution of the inferior process.  If STEP is nonzero,
     single-step it.  If SIGNAL is nonzero, give it that signal.  */
@@ -465,7 +465,7 @@ index ed6df6b..8f7109f 100644
  #include "regcache.h"
 +#include "regset.h"
 +#include "i386fbsd-tdep.h"
-+#include "i386-xstate.h"
++#include "x86-xstate.h"
  
  #include "gdb_assert.h"
  
@@ -478,7 +478,7 @@ index ed6df6b..8f7109f 100644
 +{
 +  { ".reg", 19 * 4, "general-purpose" },
 +  { ".reg2", 512, "floating-point" },
-+  { ".reg-xstate", I386_XSTATE_MAX_SIZE, "XSAVE extended state" },
++  { ".reg-xstate", X86_XSTATE_MAX_SIZE, "XSAVE extended state" },
 +  { NULL, 0 }
 +};
 +
@@ -502,8 +502,8 @@ index ed6df6b..8f7109f 100644
 +      size_t size = bfd_section_size (abfd, xstate);
 +
 +      /* Check extended state size.  */
-+      if (size < I386_XSTATE_AVX_SIZE)
-+	xcr0 = I386_XSTATE_SSE_MASK;
++      if (size < X86_XSTATE_AVX_SIZE)
++	xcr0 = X86_XSTATE_SSE_MASK;
 +      else
 +	{
 +	  char contents[8];
@@ -533,14 +533,14 @@ index ed6df6b..8f7109f 100644
 +{
 +  uint64_t xcr0 = i386fbsd_core_read_xcr0 (abfd);
 +
-+  switch (xcr0 & I386_XSTATE_ALL_MASK)
++  switch (xcr0 & X86_XSTATE_ALL_MASK)
 +    {
-+    case I386_XSTATE_MPX_AVX512_MASK:
-+    case I386_XSTATE_AVX512_MASK:
++    case X86_XSTATE_MPX_AVX512_MASK:
++    case X86_XSTATE_AVX512_MASK:
 +      return tdesc_i386_avx512;
-+    case I386_XSTATE_MPX_MASK:
++    case X86_XSTATE_MPX_MASK:
 +      return tdesc_i386_mpx;
-+    case I386_XSTATE_AVX_MASK:
++    case X86_XSTATE_AVX_MASK:
 +      return tdesc_i386_avx;
 +    default:
 +      return tdesc_i386;

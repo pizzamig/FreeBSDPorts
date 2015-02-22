@@ -2,8 +2,7 @@
 # $FreeBSD: head/devel/gdb/Makefile 379311 2015-02-18 19:24:15Z jhb $
 
 PORTNAME=	gdb
-PORTVERSION=	7.8.2
-PORTREVISION=	1
+PORTVERSION=	7.9
 CATEGORIES=	devel
 MASTER_SITES=	GNU
 
@@ -60,7 +59,6 @@ GUILE_LIB_DEPENDS=	libguile-2.0.so:${PORTSDIR}/lang/guile2
 PYTHON_CONFIGURE_ON=	--with-python=${PYTHON_CMD}
 PYTHON_CONFIGURE_OFF=	--without-python
 PYTHON_USES=		python:2
-PORT_READLINE_EXTRA_PATCHES=	${FILESDIR}/extrapatch-gdb-tui-tui-io.c
 PORT_READLINE_USES=	readline:port
 TUI_CONFIGURE_ENABLE=	tui
 
