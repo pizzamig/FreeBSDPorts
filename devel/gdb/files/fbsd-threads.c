@@ -1,4 +1,4 @@
-/* $FreeBSD: head/devel/gdb/files/fbsd-threads.c 370292 2014-10-07 10:25:42Z tijl $ */
+/* $FreeBSD: head/devel/gdb/files/fbsd-threads.c 379311 2015-02-18 19:24:15Z jhb $ */
 /* FreeBSD libthread_db assisted debugging support.
    Copyright 1999, 2000, 2001 Free Software Foundation, Inc.
 
@@ -18,8 +18,6 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
-
-#include "defs.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,6 +36,7 @@
 #include "proc_service.h"
 #include "thread_db.h"
 
+#include "defs.h"
 #include "bfd.h"
 #include "elf-bfd.h"
 #include "gdb_assert.h"
@@ -1317,7 +1316,7 @@ init_fbsd_thread_ops (void)
   fbsd_thread_ops.to_store_registers = fbsd_thread_store_registers;
   fbsd_thread_ops.to_mourn_inferior = fbsd_thread_mourn_inferior;
   fbsd_thread_ops.to_thread_alive = fbsd_thread_alive;
-  fbsd_thread_ops.to_update_thread_list = fbsd_thread_find_new_threads;
+  fbsd_thread_ops.to_find_new_threads = fbsd_thread_find_new_threads;
   fbsd_thread_ops.to_pid_to_str = fbsd_thread_pid_to_str;
   fbsd_thread_ops.to_stratum = thread_stratum;
   fbsd_thread_ops.to_get_thread_local_address = fbsd_thread_get_local_address;
