@@ -2,7 +2,7 @@
 # $FreeBSD: head/devel/gdb/Makefile 384978 2015-04-29 13:53:45Z jhb $
 
 PORTNAME=	gdb
-PORTVERSION=	7.9
+PORTVERSION=	7.9.1
 CATEGORIES=	devel
 MASTER_SITES=	GNU
 
